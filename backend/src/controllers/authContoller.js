@@ -18,11 +18,11 @@ export const authCreateUser = async(req, res, next)=>{
         
         if(token){
             res.cookie("accessToken", token, {
-                httpOnly:true,
-                secure:process.env.NODE_ENV === "production",
-                sameSite:"lax",
-                maxAge:20*60*1000
-            })
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "none",
+                maxAge: 20 * 60 * 1000
+                })
             
             return res.json({message:"User Registration Successfull"})
         }
@@ -53,10 +53,10 @@ export const authLoginUser = async(req, res, next)=>{
         
         if(token){
             res.cookie("accessToken", token, {
-                httpOnly:true,
-                secure:process.env.NODE_ENV === "production",
-                sameSite:"lax",
-                maxAge:60*60*1000
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production"?"none":"lax",
+            maxAge: 20 * 60 * 1000
             })
             return res.status(200).json({message:"Loged In Successfully"})
         }

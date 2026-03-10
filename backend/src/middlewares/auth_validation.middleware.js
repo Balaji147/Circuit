@@ -36,6 +36,7 @@ export const auth_validation = (endpoint="login")=>{
             
             next()
         }catch(er){
+            console.log(er)
             next(er)
         }
     }
