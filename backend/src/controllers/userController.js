@@ -4,8 +4,9 @@ export const getUser = async(req, res)=>{
     try{
         if(!req.user)
             return res.status(401).json({errorInfo:{all:"User Not Authorized"}})
-        const getAllUsers = `SELECT circuit_users_auth_id, name_of_user from circuit_users_auth`
-        const {rowCount, rows} = await pool.query(getAllUsers)
+        const {cid} = req.user
+        const getAllUsers = `SELECT circuit_users_auth_id, name_of_user from circuit_users_auth where ct_company_id = $1`
+        const {rowCount, rows} = await pool.query(getAllUsers, [cid])
         if(rowCount === 0)
             return res.status(404).json({message:"not avail"})
         return res.status(200).json({rows})

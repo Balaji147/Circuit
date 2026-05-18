@@ -11,7 +11,7 @@ import { useNavigate } from "react-router"
 
 const AuthCard = ({action})=>{
 
-    const INIT_FIELDS = {name:"", email:"", password:""}
+    const INIT_FIELDS = {company_name:"", name:"", email:"", password:""}
     const [getValues, setGetValues] = useState(INIT_FIELDS)
     const [isPwdShow, setIsPwdShow] = useState(false)
     const endpoint = action === "logon"?"/createUser":"/loginUser"
@@ -59,7 +59,7 @@ const AuthCard = ({action})=>{
             }
 
         }catch(er){
-            setErrorInfo(er.response.data.errorInfo)
+            setErrorInfo(er?.response?.data?.warningInfo)
         }
     }
     
@@ -69,7 +69,7 @@ const AuthCard = ({action})=>{
 
                 {/* Heading */}
                 <h1 className="text-2xl font-semibold text-gray-800 text-center mb-2">
-                    {action === "signin"?"Welcome Back":"Create your account"}
+                    {action === "login"?"Welcome Back":"Create your account"}
                 </h1>
                 <p className="text-sm text-gray-500 text-center mb-6">
                     {action === "logon"?"Join Circuit to start managing your tasks":"Login To continue with your tasks"}
@@ -78,6 +78,20 @@ const AuthCard = ({action})=>{
                     {/* Name */}
                     {action === "logon" && 
                         <>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Company Name
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="XYZ.Co"
+                                    name="company_name"
+                                    value={getValues.company_name}
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800"
+                                    onChange={getValuesFunc}
+                                />
+                                <WarningMessage warning={errorInfo.name}/>
+                            </div>
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Name

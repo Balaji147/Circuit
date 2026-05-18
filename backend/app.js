@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser"
 import authRouter from "./src/routers/authRouter.js"
 import userRouter from "./src/routers/userRouter.js"
 import taskRouter from "./src/routers/taskRouter.js"
+import employeeRouter from "./src/routers/employeeRouter.js"
+import companyRouter from "./src/routers/companyRouter.js"
 import { auth } from "./src/middlewares/autheticate_user.middleware.js"
 
 dotenv.config()
@@ -22,6 +24,8 @@ app.use(express.json())
 
 app.use("/auth", authRouter)
 app.use(auth)
+app.use("/company", companyRouter)
+app.use("/employees", employeeRouter)
 app.use("/users", userRouter)
 app.use("/tasks", taskRouter)
 

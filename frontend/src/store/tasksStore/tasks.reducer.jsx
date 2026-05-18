@@ -12,7 +12,7 @@ export const fetchTaskList = createAsyncThunk(
     "tasks/fetchUserTasks",
     async(_, thunkAPI)=>{
         try{
-            const getTasksDetails = await api.get("tasks/getTasks")
+            const getTasksDetails = await api.get("tasks/getTasks") 
             return getTasksDetails.data.taskInfo
         }catch(er){
             return thunkAPI.rejectWithValue(er)

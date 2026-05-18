@@ -5,13 +5,13 @@ export const createNewTask = async(req, res, next)=>{
         if(!req.user)
             return res.status(401).json({errorInfo:{all:"You are Not Authorized to create Task"}})
         const {title, desc, allocated_to, status, dueDate, priority} = req.body
-        const allocated_by = req.user.id
+        const {userid, cid} = req.user
         
         const createNewTask = `INSERT INTO circuit_task_info (task_title, task_description, task_priority_level, task_status,
-        task_allocated_by, task_allocated_to, task_due_date) values
-        ($1, $2, $3, $4, $5, $6, $7)`
+        task_allocated_by, task_allocated_to, task_due_date, ct_company_id) values
+        ($1, $2, $3, $4, $5, $6, $7, $8)`
         await pool.query("BEGIN")
-        await pool.query(createNewTask, [title, desc, priority, status, allocated_by, allocated_to, dueDate])
+        await pool.query(createNewTask, [title, desc, priority, status, userid, allocated_to, dueDate, cid])
         await pool.query("COMMIT")
         res.status(202).json({message:"New Task Has Been Created Successfully"})
     }catch(er){
@@ -20,15 +20,15 @@ export const createNewTask = async(req, res, next)=>{
 }
 
 export const getAllTasks = async(req, res)=>{
-    console.log("body", req.user.id)
     try{
         if(!req.user)
             return res.status(401).json({errorInfo:{all:"User is Not Authorized"}})
         const taskInfo = {}
-        const queryValues = req.query
-        const valueArr = [req.user.id]
+        const {cid} = req?.user
+        const queryValues = req.user
+        const valueArr = [cid]
         let getUserTasks = `SELECT ROW_NUMBER() OVER () AS index_no, circuit_task_info_id, task_title, task_description, task_priority_level, task_status,
-        task_allocated_by, task_allocated_to, task_due_date, task_created_dttm from circuit_task_info where task_allocated_to = $1`
+        task_allocated_by, task_allocated_to, task_due_date, task_created_dttm from circuit_task_info where ct_company_id = $1`
         let index = 2
         if(queryValues.Status){
             getUserTasks += ` and task_status = $${index}`
@@ -46,8 +46,8 @@ export const getAllTasks = async(req, res)=>{
         count(*) FILTER (where task_status = 'todo') as todo_task,
         count(*) FILTER (where task_status = 'in_progress') as in_progress_task,
         count(*) FILTER (where task_status = 'done') as done_task
-        FROM circuit_task_info`
-        let all_tasks = await pool.query(countOfAllTasks)
+        FROM circuit_task_info where ct_company_id = $1`
+        let all_tasks = await pool.query(countOfAllTasks, [cid])
         taskInfo.all_tasks = all_tasks.rows
         
         return res.status(200).json({taskInfo})
@@ -61,17 +61,17 @@ export const updateTask = async(req, res)=>{
         if(!req.user)
             return res.status(401).json({errorInfo:{all:"You are not authorized to update it"}})
         const {taskId} = req.params
-        const {id} = req.user
+        const {userid} = req.user
         if(!taskId) return res.status(404).json({errorInfo:{all:"There is No Task"}})
         const {title, desc, allocated_to, status, dueDate, priority} = req.body
         const getTaskInfo = `SELECT task_allocated_to FROM circuit_task_info WHERE circuit_task_info_id = $1`
         const {rows, rowCount} = await pool.query(getTaskInfo, [taskId])
         if(rowCount === 0) return res.status(404).json({errorInfo:{all:"There is No Task"}})
-        if(rows[0].task_allocated_to !== id) 
+        if(rows[0].task_allocated_to !== userid) 
             return res.status(401).json({errorInfo:{all:"You are not authorized to update it"}})
         const updateQry = `UPDATE circuit_task_info SET task_title = $1, task_description = $2, task_priority_level = $3
         , task_allocated_by = $4, task_allocated_to = $5, task_due_date = $6, task_status = $7  WHERE circuit_task_info_id = $8`        
-        await pool.query(updateQry, [title, desc, priority, id, allocated_to, dueDate, status, taskId])
+        await pool.query(updateQry, [title, desc, priority, userid, allocated_to, dueDate, status, taskId])
         res.status(202).json({message:"Task Deatils Updated Successfully"})
     }catch(er){
         return res.status(500).json({errorInfo:{all:"Task updation Failed"}})
@@ -82,12 +82,12 @@ export const deleteTask = async(req, res)=>{
     try{
         if(!req.user) res.status(401).json({errorInfo:{all:"You are not authorized to delete it"}})
             const {taskId} = req.params
-        const {id} = req.user
+        const {userid} = req.user
         if(!taskId) return res.status(404).json({errorInfo:{all:"There is No Task"}})
         const getTaskInfo = `SELECT task_allocated_to FROM circuit_task_info WHERE circuit_task_info_id = $1`
         const {rows, rowCount} = await pool.query(getTaskInfo, [taskId])
         if(rowCount === 0) return res.status(404).json({errorInfo:{all:"There is No Task to Delete"}})
-        if(rows[0].task_allocated_to !== id) 
+        if(rows[0].task_allocated_to !== userid) 
             return res.status(401).json({errorInfo:{all:"You are not authorized to update it"}})
         const deleteQry = `DELETE FROM circuit_task_info WHERE circuit_task_info_id = $1`
         await pool.query(deleteQry, [taskId])

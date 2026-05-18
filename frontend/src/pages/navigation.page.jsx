@@ -6,6 +6,7 @@ import add_icon from "../icons/add_icon.svg"
 import circute from "../assets/circuit_logo.png"
 import OptionCard from "../components/optioncard.component"
 import close_icon from "../icons/close_icon.svg"
+import employee_icon from "../icons/employee_icon.svg"
 import { useState } from "react"
 import { useSelector } from "react-redux"
 import { selectCurrentUser } from "../store/usersStore/user.selector"
@@ -15,7 +16,6 @@ const Navigation = ()=>{
 
     const [isOptCardOpen, setIsOptCardOpen] = useState(false)
     const selectUser = useSelector(selectCurrentUser)
-    const [isModalOpen, setIsModalOpen] = useState(false)
 
     return(
         <>
@@ -45,6 +45,14 @@ const Navigation = ()=>{
               />
             </NavLink>
 
+            <NavLink to="/employeeList">
+              <img
+                src={employee_icon}
+                alt="Employee Details"
+                className="h-6 sm:h-7 md:h-8 w-auto"
+              />
+            </NavLink>
+
             <NavLink to="/userTasks">
               <img
                 src={task_icon}
@@ -58,19 +66,6 @@ const Navigation = ()=>{
 
       {/* Right - Actions */}
       <div className="flex items-center justify-end gap-3">
-
-        {selectUser && (
-          <button
-            className="flex items-center justify-center"
-            onClick={() => setIsModalOpen(true)}
-          >
-            <img
-              src={add_icon}
-              alt="Add Task"
-              className="h-6 sm:h-7 md:h-8 w-auto"
-            />
-          </button>
-        )}
 
         <button
           className="flex items-center justify-center"
@@ -91,13 +86,6 @@ const Navigation = ()=>{
   {isOptCardOpen && <OptionCard />}
 
   <Outlet />
-
-  {isModalOpen && (
-    <FormModal
-      isModalOpen={isModalOpen}
-      setIsModalOpen={setIsModalOpen}
-    />
-  )}
 </>
     )
 }

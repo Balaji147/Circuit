@@ -8,3 +8,9 @@ export const dataFormat = (date)=>{
     return date.split("T")[0]
 }
 
+export const capitalizeWords = (text = "") => {
+  return text
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ")
+}

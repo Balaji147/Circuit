@@ -8,7 +8,7 @@ import { ErrorInfoContext } from "../contexts/errorHandler.context";
 import { useDispatch } from "react-redux";
 import { fetchTaskList } from "../store/tasksStore/tasks.reducer";
 
-const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit }) => {
+const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit = ()=>{}}) => {
 
     const INIT_VALUES = {
         title: taskData?.task_title || "",
@@ -189,7 +189,7 @@ const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit }) => {
                         <button
                             type="button"
                             className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
-                            onClick={()=>{setIsModalOpen(false);clearErrorInfo();setDataToEdit(null)}}
+                            onClick={()=>{setIsModalOpen(null);clearErrorInfo();setDataToEdit(null)}}
                         >
                             Close
                         </button>

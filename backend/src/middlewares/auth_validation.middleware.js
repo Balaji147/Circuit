@@ -19,18 +19,22 @@ export const auth_validation = (endpoint="login")=>{
             else if(!isValidEmail(email))
                 warningInfo.email = "Give the the Valid E-Mail"
 
-            if(!password)
-                warningInfo.password = "Password can't be empty"
-            else if(password.length < 8)
-                warningInfo.password = "Password should be atleast 8 character minimum"
-            if(Object.keys(warningInfo).length > 0)
-                return res.status(400).json({warningInfo})
+            if(endpoint !== "admin")
+            {
+                if(!password)
+                    warningInfo.password = "Password can't be empty"
+                else if(password.length < 8)
+                    warningInfo.password = "Password should be atleast 8 character minimum"
+                if(Object.keys(warningInfo).length > 0)
+                    return res.status(400).json({warningInfo})
+            }
 
-            if(endpoint === "logon"){
+            if(endpoint !== "login"){
                 const existingUser = `SELECT circuit_users_auth_id from circuit_users_auth where user_mailid = $1`
                 const {rowCount} = await pool.query(existingUser, [email])
+                console.log("count", rowCount)
                 if(rowCount > 0){
-                    return res.status(400).json({warningInfo:{all:"User Already Exist, Try to Login or Diffrent Mail id"}})
+                    return res.status(400).json({warningInfo:{all:"User Already Exist, Try Diffrent Mail id"}})
                 }
             }
             

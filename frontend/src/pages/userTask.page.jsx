@@ -4,6 +4,7 @@ import task_icon from "../icons/task_icon.svg"
 import { useDispatch, useSelector } from "react-redux"
 import edit_icon from "../icons/edit_icon.svg"
 import { dataFormat } from "../helpers/format.function"
+import add_icon from "../icons/add_icon.svg"
 import delete_icon from "../icons/delete_icon.svg"
 import { selectUserTasks } from "../store/tasksStore/tasks.selector"
 import FormModal from "../components/modal.component"
@@ -17,17 +18,17 @@ const UserTasks = ()=>{
     const user_task_list = useSelector(selectUserTasks)
     const [dataToEdit, setDataToEdit] = useState(null)
     const [dataToDlt, setDataToDlt] = useState(null)
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(null)
     const [filterMode, setFilterMode] = useState({})
     const dispatch = useDispatch()
 
     const openModalToEdit = (taskData)=>{
         setDataToEdit(taskData)
-        setIsModalOpen(true)
+        setIsModalOpen("edit")
     }
     const openModalToDelete = (taskData)=>{
         setDataToDlt(taskData)
-        setIsModalOpen(true)
+        setIsModalOpen("delete")
     }
 
     const onFilterChange = (elm)=>{
@@ -37,7 +38,9 @@ const UserTasks = ()=>{
             [name]:value
         }))
     }
-
+    const openModalFunc = ()=>{
+        setIsModalOpen("create")
+    }
     useEffect(()=>{
         const getFilteredValuesFunc = async()=>{
             const getFilteredValues = await api.get("tasks/getTasks", {params: filterMode})
@@ -50,7 +53,7 @@ const UserTasks = ()=>{
     
     return(
         <div>
-            <Header icon={task_icon} title={"Your Tasks"}/>
+            <Header icon={task_icon} title={"Your Tasks"} extra_icon={add_icon} iconOnClick={openModalFunc}/>
             {user_task_list && 
                 <>
                 <Filters onFilterChange={onFilterChange} value={filterMode}/>
@@ -126,7 +129,7 @@ const UserTasks = ()=>{
                     </tbody>
                 </table>
             </div>
-            {isModalOpen && (
+            {isModalOpen && isModalOpen !== "create" && (
                 dataToEdit ? (
                     <FormModal
                     taskData={dataToEdit}
@@ -144,6 +147,12 @@ const UserTasks = ()=>{
                 )}
             </>
             }
+            {isModalOpen === "create" && (
+                <FormModal
+                isModalOpen={isModalOpen}
+                setIsModalOpen={setIsModalOpen}
+                />
+            )}
         </div>
     )
 }

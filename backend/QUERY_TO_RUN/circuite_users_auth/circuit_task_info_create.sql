@@ -14,3 +14,4 @@ select * from circuit_task_info
 SELECT COUNT(*) AS overdue_count
 FROM circuit_task_info
 WHERE due_date < NOW();
+
