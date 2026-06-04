@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs"
 import pool from "../../db.js"
 import jwt from "jsonwebtoken"
+import {generateCompanyId} from "../helpers/partner.functions.js"
 
 const jwt_key = process.env.JWT_SECRET_KEY
 
@@ -10,6 +11,7 @@ export const authCreateUser = async(req, res, next)=>{
         let {name, company_name, email, password} = req.body
         const hashedPWD = await bcrypt.hash(password, 10)
         await client.query("BEGIN")
+        const unique_id = generateCompanyId(company_name)
         const createNewCompany = `INSERT INTO circuit_company_info (company_name) values
         ($1) RETURNING circuit_company_info_id`
         const company_info = await pool.query(createNewCompany, [company_name])
@@ -50,18 +52,18 @@ export const authLoginUser = async(req, res, next)=>{
             WHERE cua.user_mailid = $1`
 
         const {rowCount, rows} = await pool.query(existingUser, [email])
-        console.log("erer", email)
+        
         if(rowCount === 0)
-            return res.status(404).json({errorInfo:{all:"User Doesn't Exist"}})
+            return res.status(404).json({warningInfo:{all:"User Doesn't Exist"}})
         
         const rowValues = rows[0]
         const user_password = rowValues.user_password
         const isMatchFound = await bcrypt.compare(password, user_password)
         
-        if(!isMatchFound) return res.status(401).json({errorInfo:{all:"User Credential is Wrong"}})
+        if(!isMatchFound) return res.status(401).json({warningInfo:{all:"User Credential is Wrong"}})
         
         const payload = {userid:rowValues.circuit_users_auth_id, user_name:rowValues.name_of_user, user_role:rowValues.user_role, user_mailid:rowValues.user_mailid, cid:rowValues.circuit_company_info_id}
-        console.log("pay", payload)
+        
         const token = jwt.sign(payload, jwt_key, {expiresIn:"60m"})
         
         if(token){
@@ -74,9 +76,9 @@ export const authLoginUser = async(req, res, next)=>{
             return res.status(200).json({message:"Loged In Successfully"})
         }
 
-        return res.status(500).json({errorInfo:{all:"Login Failed"}})
+        return res.status(500).json({warningInfo:{all:"Login Failed"}})
     }catch(er){
-        return res.status(500).json({errorInfo:er})
+        return res.status(500).json({warningInfo:er})
     }
 }
 

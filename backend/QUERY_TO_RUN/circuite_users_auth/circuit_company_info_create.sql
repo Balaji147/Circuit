@@ -14,8 +14,14 @@ alter table circuit_company_info
 drop column company_logo
 
 alter table circuit_company_info 
+add column next_task_number numeric default 1
+
+alter table circuit_company_info 
 add column company_logo text
 default 'https://shorturl.at/G8gt8'
+
+alter table circuit_company_info 
+add column task_id_string text
 
 SELECT cci.* FROM circuit_company_info cci 
 JOIN circuit_users_auth cua
@@ -32,3 +38,4 @@ from circuit_company_info where circuit_company_info_id = 13;
 
 select * from circuit_company_info where ct_company_id = 13
 
+SELECT task_id_string from circuit_company_info WHERE circuit_company_info_id = 13

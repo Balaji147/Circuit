@@ -59,7 +59,9 @@ const AuthCard = ({action})=>{
             }
 
         }catch(er){
-            setErrorInfo(er?.response?.data?.warningInfo)
+            console.log(er?.response?.data.warningInfo.all)
+            warningInfo.all = er?.response?.data?.warningInfo.all
+            setErrorInfo(warningInfo)
         }
     }
     

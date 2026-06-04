@@ -23,9 +23,12 @@ alter table circuit_users_auth
 add column user_designation text
 
 alter table circuit_users_auth
+add column user_designation text
+
+alter table circuit_users_auth
 add column user_temp_password text
 
-select * from circuit_users_auth where user_mailid = 'mebala147@gmail.com'
+select * from circuit_users_auth
 
 delete from circuit_users_auth where circuit_users_auth_id = 50
 
@@ -34,8 +37,5 @@ FROM circuit_users_auth cua join circuit_company_info cci on cua.ct_company_id =
 WHERE cua.user_mailid = 'cristy@123.com'
 
 
-update circuit_users_auth set user_role = 'not_admin' where user_role = 'false'
+update circuit_users_auth set user_role = 'no'
 
-SELECT cua.circuit_users_auth_id, cua.user_password, cua.user_role,  cua.name_of_user, cua.user_mailid, cci.circuit_company_info_id
-            FROM circuit_users_auth cua join circuit_company_info cci on cua.ct_company_id =  cci.circuit_company_info_id
-            WHERE cua.user_mailid = 'mebala147@gmail.com'

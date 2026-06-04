@@ -6,15 +6,24 @@ export const createNewTask = async(req, res, next)=>{
             return res.status(401).json({errorInfo:{all:"You are Not Authorized to create Task"}})
         const {title, desc, allocated_to, status, dueDate, priority} = req.body
         const {userid, cid} = req.user
-        
-        const createNewTask = `INSERT INTO circuit_task_info (task_title, task_description, task_priority_level, task_status,
-        task_allocated_by, task_allocated_to, task_due_date, ct_company_id) values
-        ($1, $2, $3, $4, $5, $6, $7, $8)`
         await pool.query("BEGIN")
-        await pool.query(createNewTask, [title, desc, priority, status, userid, allocated_to, dueDate, cid])
+        const qryTaskIdString = `UPDATE circuit_company_info 
+                                SET next_task_number = next_task_number + 1 
+                                WHERE circuit_company_info_id = $1 RETURNING next_task_number - 1 as current_task_number, task_id_string`
+        const getString = await pool.query(qryTaskIdString, [cid])
+        
+        let {task_id_string, current_task_number} = getString?.rows[0]
+
+        let insert_task_id = `${task_id_string}-${String(current_task_number).padStart(5, "0")}`
+
+        const createNewTaskQry = `INSERT INTO circuit_task_info (task_title, task_description, task_priority_level, task_status,
+        task_allocated_by, task_allocated_to, task_due_date, ct_company_id, task_unique_id) values
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+        await pool.query(createNewTaskQry, [title, desc, priority, status, userid, allocated_to, dueDate, cid, insert_task_id])
         await pool.query("COMMIT")
         res.status(202).json({message:"New Task Has Been Created Successfully"})
     }catch(er){
+        await pool.query("ROLLBACK")
         return res.status(500).json({errorInfo:{all:"Can't Create Task"}})
     }
 }
@@ -25,19 +34,20 @@ export const getAllTasks = async(req, res)=>{
             return res.status(401).json({errorInfo:{all:"User is Not Authorized"}})
         const taskInfo = {}
         const {cid} = req?.user
-        const queryValues = req.user
+        const {Status, Priority} = req.query
         const valueArr = [cid]
+        console.log("vall",Status, Priority)
         let getUserTasks = `SELECT ROW_NUMBER() OVER () AS index_no, circuit_task_info_id, task_title, task_description, task_priority_level, task_status,
         task_allocated_by, task_allocated_to, task_due_date, task_created_dttm from circuit_task_info where ct_company_id = $1`
         let index = 2
-        if(queryValues.Status){
+        if(Status){
             getUserTasks += ` and task_status = $${index}`
-            valueArr.push(queryValues.Status)
+            valueArr.push(Status)
             index++
         }
-        if(queryValues.Priority){
+        if(Priority){
             getUserTasks += ` and task_priority_level = $${index}`
-            valueArr.push(queryValues.Priority)
+            valueArr.push(Priority)
         }
         let user_tasks = await pool.query(getUserTasks, valueArr)
         taskInfo.user_tasks = user_tasks.rows

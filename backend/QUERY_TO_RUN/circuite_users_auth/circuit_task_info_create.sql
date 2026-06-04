@@ -11,6 +11,9 @@ CREATE TABLE circuit_task_info (
 
 select * from circuit_task_info
 
+alter table circuit_task_info 
+add column task_unique_id text 
+
 SELECT COUNT(*) AS overdue_count
 FROM circuit_task_info
 WHERE due_date < NOW();
