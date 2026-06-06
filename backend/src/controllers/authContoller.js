@@ -22,7 +22,7 @@ export const authCreateUser = async(req, res, next)=>{
         const {rows} = await client.query(createNewUser, [name, email, hashedPWD, company_id])
         await client.query("COMMIT")
         const payload = {userid:rows[0].circuit_users_auth_id, user_name:rows[0].name_of_user, user_name:rows[0].user_role, user_mailid:rows[0].user_mailid, cid:company_id}
-        const token = jwt.sign(payload, jwt_key, {expiresIn:'20m'})
+        const token = jwt.sign(payload, jwt_key, {expiresIn:'60m'})
         
         if(token){
             res.cookie("accessToken", token, {
@@ -71,7 +71,7 @@ export const authLoginUser = async(req, res, next)=>{
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: process.env.NODE_ENV === "production"?"none":"lax",
-            maxAge: 20 * 60 * 1000
+            maxAge: 60 * 60 * 1000
             })
             return res.status(200).json({message:"Loged In Successfully"})
         }
@@ -86,7 +86,6 @@ export const authGetMe = async(req, res)=>{
     try{
         const user_id = req.user.userid
         if(!user_id) return res.status(404).json({errorInfo:{all:"Invalid User"}})
-            console.log("getauth", req.user)
         return res.status(200).json({user_data:req.user})
     }catch(err){
         console.log(err)

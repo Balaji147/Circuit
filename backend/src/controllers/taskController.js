@@ -32,11 +32,11 @@ export const getAllTasks = async(req, res)=>{
     try{
         if(!req.user)
             return res.status(401).json({errorInfo:{all:"User is Not Authorized"}})
+        
         const taskInfo = {}
         const {cid} = req?.user
-        const {Status, Priority} = req.query
+        const {Status, Priority, sr_name} = req.query
         const valueArr = [cid]
-        console.log("vall",Status, Priority)
         let getUserTasks = `SELECT ROW_NUMBER() OVER () AS index_no, circuit_task_info_id, task_title, task_description, task_priority_level, task_status,
         task_allocated_by, task_allocated_to, task_due_date, task_created_dttm from circuit_task_info where ct_company_id = $1`
         let index = 2
@@ -48,6 +48,10 @@ export const getAllTasks = async(req, res)=>{
         if(Priority){
             getUserTasks += ` and task_priority_level = $${index}`
             valueArr.push(Priority)
+        }
+        if(sr_name){
+            getUserTasks += ` and task_title ilike $${index}`
+            valueArr.push(`%${sr_name.trim()}%`)
         }
         let user_tasks = await pool.query(getUserTasks, valueArr)
         taskInfo.user_tasks = user_tasks.rows

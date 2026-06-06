@@ -20,6 +20,7 @@ const UserTasks = ()=>{
     const [dataToDlt, setDataToDlt] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(null)
     const [filterMode, setFilterMode] = useState({})
+    const [debounceName, setDebounceName] = useState("")
     const dispatch = useDispatch()
 
     const openModalToEdit = (taskData)=>{
@@ -30,6 +31,14 @@ const UserTasks = ()=>{
         setDataToDlt(taskData)
         setIsModalOpen("delete")
     }
+
+    useEffect(()=>{
+        const debounceTimer = setTimeout(()=>{
+            setDebounceName(filterMode.sr_name)
+        }, 500)
+
+        return ()=>clearTimeout(debounceTimer)
+    },[filterMode.sr_name])
 
     const onFilterChange = (elm)=>{
         const {name, value} = elm.target
@@ -49,7 +58,7 @@ const UserTasks = ()=>{
         }
 
         getFilteredValuesFunc()
-    }, [filterMode])
+    }, [filterMode.Status, filterMode.Priority, debounceName])
     
     return(
         <div>
