@@ -1,10 +1,15 @@
 import { useSelector } from "react-redux"
 import { selectCurrentUser } from "../store/usersStore/user.selector"
 
+interface HeaderProps{
+    icon?:string,
+    title:string;
+    extra_icon?:string;
+    iconOnClick?:()=>void
+}
 
-export const Header = ({icon, title, extra_icon, iconOnClick=()=>{}})=>{
+export const Header = ({icon, title, extra_icon, iconOnClick}:HeaderProps)=>{
     const getEmployee = useSelector(selectCurrentUser)
-    console.log("emp", getEmployee)
     return(
          <div
             className="w-full py-3 border-b flex items-center gap-2"
@@ -22,7 +27,7 @@ export const Header = ({icon, title, extra_icon, iconOnClick=()=>{}})=>{
                 {title}
             </span>
 
-            {extra_icon && getEmployee.user_role === 'admin' && (
+            {extra_icon && getEmployee?.user_role === 'admin' && (
                 <img
                 src={extra_icon}
                 alt={title}

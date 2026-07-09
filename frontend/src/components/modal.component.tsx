@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import ComboBox from "./comboBox.component";
 import WarningMessage from "../partner/warning.partner"
 import { useEffect, useContext } from "react";
@@ -7,10 +7,32 @@ import { api } from "../helpers/axios.config";
 import { ErrorInfoContext } from "../contexts/errorHandler.context";
 import { useDispatch } from "react-redux";
 import { fetchTaskList } from "../store/tasksStore/tasks.reducer";
+import type{ TaskDataProps } from "../types/filter.types";
+import type { NullAllowedType } from "../types/common.types";
 
-const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit = ()=>{}}) => {
+interface InitFieldsValues{
+    title: string,
+    desc: string
+    allocated_to: string
+    dueDate: string
+    status: string
+    priority: string
+}
 
-    const INIT_VALUES = {
+interface FormModalProps{
+    setIsModalOpen:React.Dispatch<React.SetStateAction<NullAllowedType<string | boolean>>>;
+    taskData?:NullAllowedType<TaskDataProps>;
+    setDataToEdit?:React.Dispatch<React.SetStateAction<NullAllowedType<TaskDataProps>>>
+}
+
+interface UserListProps{
+    value:number;
+    name:string
+}
+
+const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit}: FormModalProps) => {
+
+    const INIT_VALUES:InitFieldsValues = {
         title: taskData?.task_title || "",
         desc: taskData?.task_description || "",
         allocated_to: String(taskData?.task_allocated_to) || "",
@@ -20,13 +42,13 @@ const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit = ()=>{}}) =
     }
     const { errorInfo, setErrorInfo, clearErrorInfo } = useContext(ErrorInfoContext)
     const dispatch = useDispatch()
-    const [fieldValues, setFieldValues] = useState(INIT_VALUES)
-    const [userList, setUserList] = useState(null)
+    const [fieldValues, setFieldValues] = useState<InitFieldsValues>(INIT_VALUES)
+    const [userList, setUserList] = useState<UserListProps[]>([])
 
-    const minDate = new Date().toISOString().split("T")[0]
+    const minDate:string = new Date().toISOString().split("T")[0] ?? ""
 
-    const getFieldValues = (elm)=>{
-        const {name, value} = elm.target
+    const getFieldValues = (elm:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>)=>{
+        const {name, value} = elm.currentTarget
         setFieldValues(prev=>({...prev, [name]:value}))
         setErrorInfo({[name]:""})
     }
@@ -48,10 +70,10 @@ const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit = ()=>{}}) =
         getAllusersFunc()
     },[])
 
-    const submitTaskFunc = async(e)=>{
+    const submitTaskFunc = async(e:React.SyntheticEvent<HTMLFormElement>)=>{
         e.preventDefault()
 
-        let warningInfo = {}
+        let warningInfo:Partial<InitFieldsValues> = {}
 
         if(!fieldValues.title)
             warningInfo.title = "Title Can't be Empty"
@@ -124,7 +146,7 @@ const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit = ()=>{}}) =
                             Description
                         </label>
                         <textarea
-                            rows="4"
+                            rows={4}
                             placeholder="Enter task description"
                             name="desc"
                             value={fieldValues.desc}
@@ -150,13 +172,13 @@ const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit = ()=>{}}) =
                     </div>
 
                     {/* Allocated user */}
-                    {userList && (
+                    {userList.length>0 && (
                         <div>
                             <ComboBox
                                 label={"allocated_to"}
                                 comboValues={userList}
                                 onChangeVal={getFieldValues}
-                                value={fieldValues.allocated_to}
+                                comboValue={fieldValues.allocated_to}
                             />
                             <WarningMessage warning={errorInfo.allocated_to}/>
                         </div>
@@ -168,7 +190,7 @@ const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit = ()=>{}}) =
                             label={"status"}
                             comboValues={statusValues}
                             onChangeVal={getFieldValues}
-                            value={fieldValues.status}
+                            comboValue={fieldValues.status}
                         />
                         <WarningMessage warning={errorInfo.status}/>
                     </div>
@@ -179,7 +201,7 @@ const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit = ()=>{}}) =
                             label={"priority"}
                             comboValues={levelValues}
                             onChangeVal={getFieldValues}
-                            value={fieldValues.priority}
+                            comboValue={fieldValues.priority}
                         />
                         <WarningMessage warning={errorInfo.priority}/>
                     </div>

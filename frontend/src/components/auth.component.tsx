@@ -1,33 +1,45 @@
-import { useState, useContext } from "react"
+import React, { useState, useContext } from "react"
 import hideEye_icon from "../icons/hideEye.svg"
 import showEye_icon from "../icons/showEye.svg"
 import { ErrorInfoContext } from "../contexts/errorHandler.context"
-import { api } from "../helpers/axios.config"
+import { api } from "../helpers/axios.config.js"
 import WarningMessage from "../partner/warning.partner"
 import {useDispatch} from "react-redux"
-import {setUsers} from "../store/usersStore/user.reducer"
+import {setUsers} from "../store/usersStore/user.reducer.jsx"
 import { isValidEmail, isValidString } from "../helpers/format.function"
 import { useNavigate } from "react-router"
+import { setCardOpen } from "../store/usersStore/user.reducer.jsx"
 
-const AuthCard = ({action})=>{
+interface ActionMethods {
+    action: "logon" | "login"
+}
 
-    const INIT_FIELDS = {company_name:"", name:"", email:"", password:""}
-    const [getValues, setGetValues] = useState(INIT_FIELDS)
-    const [isPwdShow, setIsPwdShow] = useState(false)
-    const endpoint = action === "logon"?"/createUser":"/loginUser"
+interface InitFieldsValues{
+    company_name:string;
+    name:string;
+    email:string;
+    password:string
+}
+
+const AuthCard = ({action}:ActionMethods)=>{
+
+    const INIT_FIELDS:InitFieldsValues = {company_name:"", name:"", email:"", password:""}
+    const [getValues, setGetValues] = useState<InitFieldsValues>(INIT_FIELDS)
+    const [isPwdShow, setIsPwdShow] = useState<boolean>(false)
+    const endpoint:string = action === "logon"?"/createUser":"/loginUser"
     const {errorInfo, setErrorInfo, clearErrorInfo} = useContext(ErrorInfoContext)
     const dispatch = useDispatch()
     const navigation = useNavigate()
 
-    const getValuesFunc = (e)=>{
+    const getValuesFunc = (e:React.ChangeEvent<HTMLInputElement>)=>{
         const {name, value} = e.target
         setGetValues((prev)=>({...prev, [name]:value}))
         setErrorInfo({[name]:""})
     }
 
-    const submitAuthValues = async(e)=>{
+    const submitAuthValues = async(e:React.SyntheticEvent<HTMLFormElement>)=>{
         e.preventDefault()
-        let warningInfo = {}
+        let warningInfo: Partial<InitFieldsValues> & {all?:string} = {}
         try{
             if(!getValues.name && action === "logon")
                 warningInfo.name = "Name can't be empty"
@@ -55,11 +67,11 @@ const AuthCard = ({action})=>{
                 const getUserValue = await api.get("auth/me")
                 if(getUserValue.data.user_data)
                     dispatch(setUsers(getUserValue.data.user_data))
+                dispatch(setCardOpen(false))
                 navigation("/")
             }
 
         }catch(er){
-            console.log(er?.response?.data.warningInfo.all)
             warningInfo.all = er?.response?.data?.warningInfo.all
             setErrorInfo(warningInfo)
         }

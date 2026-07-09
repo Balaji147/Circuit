@@ -34,12 +34,12 @@ export const getAllTasks = async(req, res)=>{
             return res.status(401).json({errorInfo:{all:"User is Not Authorized"}})
         
         const taskInfo = {}
-        const {cid} = req?.user
+        const {cid, userid, user_role} = req?.user
         const {Status, Priority, sr_name} = req.query
-        const valueArr = [cid]
+        const valueArr = [cid, userid]
         let getUserTasks = `SELECT ROW_NUMBER() OVER () AS index_no, circuit_task_info_id, task_title, task_description, task_priority_level, task_status,
-        task_allocated_by, task_allocated_to, task_due_date, task_created_dttm from circuit_task_info where ct_company_id = $1`
-        let index = 2
+        task_allocated_by, task_allocated_to, task_due_date, task_created_dttm from circuit_task_info where ct_company_id = $1 and task_allocated_to = $2`
+        let index = 3
         if(Status){
             getUserTasks += ` and task_status = $${index}`
             valueArr.push(Status)
@@ -53,15 +53,18 @@ export const getAllTasks = async(req, res)=>{
             getUserTasks += ` and task_title ilike $${index}`
             valueArr.push(`%${sr_name.trim()}%`)
         }
+        
         let user_tasks = await pool.query(getUserTasks, valueArr)
         taskInfo.user_tasks = user_tasks.rows
-        const countOfAllTasks = `SELECT COUNT(*) AS all_tasks,
+        let countOfAllTasks = `SELECT COUNT(*) AS all_tasks,
         count(*) FILTER (where task_due_date < now() and task_status != 'done') as over_due_task,
         count(*) FILTER (where task_status = 'todo') as todo_task,
         count(*) FILTER (where task_status = 'in_progress') as in_progress_task,
         count(*) FILTER (where task_status = 'done') as done_task
-        FROM circuit_task_info where ct_company_id = $1`
-        let all_tasks = await pool.query(countOfAllTasks, [cid])
+        FROM circuit_task_info where ct_company_id = $1
+        AND task_allocated_to = $2`
+
+        let all_tasks = await pool.query(countOfAllTasks, [cid, userid])
         taskInfo.all_tasks = all_tasks.rows
         
         return res.status(200).json({taskInfo})

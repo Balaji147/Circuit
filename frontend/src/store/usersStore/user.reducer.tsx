@@ -1,7 +1,9 @@
 import {createSlice} from "@reduxjs/toolkit"
+import type { UserInitStates } from "../../types/users.type"
 
-export const USERS_INIT_STATE = {
+export const USERS_INIT_STATE:UserInitStates = {
     users:null,
+    cardOpen:false,
     loading:true
 }
 
@@ -18,10 +20,13 @@ export const usersSlicer = createSlice({
         },
         setLogoutUser(state){
             state.users = null
+        },
+        setCardOpen(state, action){
+            state.cardOpen = action.payload
         }
     }
 })
 
-export const {setUsers, setLoading, setLogoutUser} = usersSlicer.actions
+export const {setUsers, setLoading, setLogoutUser, setCardOpen} = usersSlicer.actions
 
 export const userReducer = usersSlicer.reducer

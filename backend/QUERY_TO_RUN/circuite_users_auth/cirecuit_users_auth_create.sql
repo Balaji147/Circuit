@@ -23,6 +23,9 @@ alter table circuit_users_auth
 add column user_designation text
 
 alter table circuit_users_auth
+add column employee_id text
+
+alter table circuit_users_auth
 add column user_designation text
 
 alter table circuit_users_auth

@@ -12,7 +12,6 @@ export const auth = (req, res, next)=>{
         req.user = {userid:decode.userid, user_name:decode.user_name, user_role:decode.user_role, user_mailid:decode.user_mailid, cid:decode.cid}
         next()
     }catch(err){
-        console.log(err)
         if(err.name === "TokenExpiredError")
             return res.status(401).json({warningInfo:{all:"Access Token Expired"}})
         return res.status(401).json({warningInfo:{all:"Token Invalid"}})

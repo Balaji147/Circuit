@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../../helpers/axios.config";
+import type { TaskInitInterface } from "../../types/tasks_reducer.types";
 
-export const TASKS_INIT_STATE = {
+export const TASKS_INIT_STATE:TaskInitInterface = {
     user_tasks:null,
     all_tasks:null,
     loading:true,

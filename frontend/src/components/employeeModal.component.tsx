@@ -1,11 +1,28 @@
-import { useState, useContext } from "react"
+import React, { useState, useContext } from "react"
 import { ErrorInfoContext } from "../contexts/errorHandler.context"
 import WarningMessage from "../partner/warning.partner"
+import type { NullAllowedType } from "../types/common.types";
 import { api } from "../helpers/axios.config"
 
-const EmployeeModal = ({setOpenEmployeeModal, getEmployees})=>{
+interface EmployeeModalProps{
+    setOpenEmployeeModal:React.Dispatch<React.SetStateAction<NullAllowedType<string>>>
+    getEmployees:()=>void
+}
 
-    const INIT_VALUES = {
+interface InitFieldsValues{
+    name:string
+    emp_designation:string;
+    email:string;
+    password:string;
+    admin_ind:boolean
+    auto_pwd_ind:boolean
+}
+
+type havePwdProp = boolean
+
+const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=>{
+
+    const INIT_VALUES:InitFieldsValues = {
         name:"",
         emp_designation:"",
         email:"",
@@ -14,12 +31,12 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees})=>{
         auto_pwd_ind:false
     }
 
-    const [fieldValues, setFieldValues] = useState(INIT_VALUES)
+    const [fieldValues, setFieldValues] = useState<InitFieldsValues>(INIT_VALUES)
     const { errorInfo, setErrorInfo, clearErrorInfo } = useContext(ErrorInfoContext)
-    const [havePassword, setHavePassword] = useState(true)
+    const [havePassword, setHavePassword] = useState<havePwdProp>(true)
 
-    const getFieldValues = (elm)=>{
-        const {name, value, checked, type} = elm.target
+    const getFieldValues = (elm:React.ChangeEvent<HTMLInputElement>)=>{
+        const {name, value, checked, type} = elm.currentTarget;
         setFieldValues(prev=>({...prev, [name]:type === "checkbox" ? checked : value}))  
 
         if(name === "auto_pwd_ind")
@@ -29,10 +46,10 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees})=>{
         }
     }
 
-    const createEmployeeFunc = async(elm)=>{
+    const createEmployeeFunc = async(elm:React.SyntheticEvent<HTMLFormElement>)=>{
         elm.preventDefault()
 
-        let warningInfo = {}
+        let warningInfo:Partial<InitFieldsValues> = {}
         try{
             if(!fieldValues.name)
                 warningInfo.name = "Name Can't be Empty"
@@ -62,7 +79,7 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees})=>{
             setErrorInfo((prev)=>({...prev, email:er?.response?.data?.warningInfo?.all}))
         }
     }
-    console.log("info",errorInfo)
+    
     return(
         <div className="fixed inset-0 flex items-center justify-center bg-black/40 px-4">
             <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-gray-200 

@@ -9,9 +9,18 @@ export const getEmployeesList = async(req, res, next)=>{
             return res.status(404).json({warningInfo:"User Not Available"})
 
         const {cid} = req.user
-
-        const emplQry = `SELECT ROW_NUMBER() OVER() as index_no, circuit_users_auth_id, name_of_user, user_mailid, created_at, user_designation, user_role from circuit_users_auth where ct_company_id = $1`
-        const {rows, rowCount} = await pool.query(emplQry, [cid])
+        const {emp_name} = req?.query
+        
+        const paramsArr = [cid]
+        let emplQry = `SELECT ROW_NUMBER() OVER() as index_no, circuit_users_auth_id, 
+                        name_of_user, user_mailid, employee_id, created_at, 
+                        user_designation, user_role from circuit_users_auth where ct_company_id = $1`
+        if(emp_name){
+            emplQry +=` and name_of_user ilike $2`
+            paramsArr.push(`%${emp_name}%`)
+        }
+        
+        const {rows, rowCount} = await pool.query(emplQry, paramsArr)
         if(rowCount === 0)
             return res.status(404).json({warningInfo:"Employees Not Available"})
 
@@ -29,13 +38,12 @@ export const insertEmployee = async(req, res, next)=>{
 
         const chkAdminUser = `SELECT user_role from circuit_users_auth where circuit_users_auth_id = $1`
         const {rows, rowCount} = await pool.query(chkAdminUser, [userid])
-        console.log("rows",rows)
+        
         if(rowCount === 0)
             return res.status(404).json({warningInfo:"Employees Not Available"})
 
         if(rows[0].user_role === "admin"){
             const {name_of_user, emp_designation, emp_mailid, emp_password, admin_ind, auto_pwd_ind} = req.body
-            console.log(req.body)
             const final_password = auto_pwd_ind ? crypto.randomBytes(6).toString("base64").slice(0, 8) : emp_password
             const is_as_admin = admin_ind && "same_as_admin"
             const hashedPWD = await bcrypt.hash(final_password, 10)
@@ -52,7 +60,6 @@ export const insertEmployee = async(req, res, next)=>{
 
     }
     catch(err){
-        console.log(err)
         await client.query("ROLLBACK")
         return res.status(500).json({warningInfo:"Something Went Wrong"})
     }

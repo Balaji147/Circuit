@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux"
-import { setLogoutUser } from "../store/usersStore/user.reducer"
+import { setCardOpen, setLogoutUser } from "../store/usersStore/user.reducer"
 import { selectCurrentUser } from "../store/usersStore/user.selector"
 import { api } from "../helpers/axios.config"
 import { useNavigate } from "react-router"
@@ -11,6 +11,7 @@ const OptionCard = ()=>{
     const logoutHandler = async()=>{
         await api.post("auth/logout")
         dispatch(setLogoutUser())
+        dispatch(setCardOpen())
         navigation("/login")
     }
     return(

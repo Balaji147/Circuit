@@ -88,7 +88,6 @@ export const authGetMe = async(req, res)=>{
         if(!user_id) return res.status(404).json({errorInfo:{all:"Invalid User"}})
         return res.status(200).json({user_data:req.user})
     }catch(err){
-        console.log(err)
         return res.status(500).json({errorInfo:{all:err}})
     }
 }

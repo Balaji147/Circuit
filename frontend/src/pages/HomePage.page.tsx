@@ -3,6 +3,7 @@ import { Header } from "../components/header.component"
 import SummaryCard from "../components/dshboard_card.component"
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import {useNavigate} from "react-router-dom"
 import { fetchTaskList } from "../store/tasksStore/tasks.reducer"
 import { selectAllTasks } from "../store/tasksStore/tasks.selector"
 import { fetchCompanyInfo } from "../store/companyStore/company.reducer"
@@ -15,8 +16,9 @@ const HomePage = ()=>{
         dispatch(fetchCompanyInfo())
     },[dispatch])
 
+    const navigate = useNavigate()
+
     const companyInfo = useSelector(selectCompanyInfo)
-    console.log(companyInfo)
 
     const all_user_tasks = useSelector(selectAllTasks)
     return (
@@ -53,7 +55,7 @@ const HomePage = ()=>{
                     <div className="hidden md:block h-10 w-px bg-gray-300"></div>
 
                     {/* Employee Count */}
-                    <div className="flex flex-col items-center justify-center px-2">
+                    <div className="flex flex-col items-center justify-center px-2" onClick={()=>navigate("employeeList")}>
                         <div className="text-base md:text-lg font-semibold text-gray-800">
                         {companyInfo?.employee_cnt}
                         </div>
@@ -68,16 +70,16 @@ const HomePage = ()=>{
                     {/* Admin */}
                     <div className="flex flex-col items-center justify-center px-2">
                         <div className="text-base md:text-lg font-semibold text-gray-800">
-                        {companyInfo?.admin_name}
+                            {companyInfo?.admin_name}
                         </div>
                         <div className="text-xs md:text-sm text-gray-500">
-                        Admin
+                            Admin
                         </div>
                     </div>
 
                     </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <SummaryCard Content={"Total Tasks"} Count={all_user_tasks?.all_tasks || 0} />
+                    <SummaryCard Content={"Total Tasks"} Count={all_user_tasks?.all_tasks || 0}  onClickFunc={()=>navigate("userTasks")}/>
                     <SummaryCard Content={"Overdue Tasks"} Count={all_user_tasks?.over_due_task || 0} />
                 </div>
 

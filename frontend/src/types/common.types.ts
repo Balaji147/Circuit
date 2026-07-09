@@ -1,0 +1,1 @@
+export type NullAllowedType<T> = T | null

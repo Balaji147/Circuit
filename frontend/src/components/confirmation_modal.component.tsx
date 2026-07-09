@@ -1,16 +1,37 @@
 import { useDispatch } from "react-redux";
 import { api } from "../helpers/axios.config";
 import { fetchTaskList } from "../store/tasksStore/tasks.reducer";
+import type { NullAllowedType } from "../types/common.types";
+import type { NameIdType } from "../types/filter.types";
+import type React from "react";
 
-const ConfirmModal = ({ message, setIsModalOpen, taskData, setDataToDlt }) => {
+interface taskDataProps{
+  task_id:number;
+  task_name:string;
+}
+
+interface ConfirmModalProps{
+  message:string;
+  setIsModalOpen:React.Dispatch<React.SetStateAction<NullAllowedType<string|boolean>>>;
+  taskData:taskDataProps;
+  setDataToDlt:React.Dispatch<React.SetStateAction<NullAllowedType<NameIdType>>>
+}
+
+type er = string
+
+const ConfirmModal = ({ message, setIsModalOpen, taskData, setDataToDlt }:ConfirmModalProps) => {
     const dispatch = useDispatch()
     const deleteTheTaskHandle = async()=>{
-        const deleteTheTask = await api.delete(`tasks/deleteTask/${taskData.task_id}`)
-        if(deleteTheTask.status === 200)
-        {
+        try{
+          const deleteTheTask = await api.delete(`tasks/deleteTask/${taskData.task_id}`)
+          if(deleteTheTask.status === 200)
+          {
             dispatch(fetchTaskList())
             setIsModalOpen(false)
             setDataToDlt(null)
+          }
+        }catch(er){
+          console.error("Failed to delete the task:", er);
         }
     }
 

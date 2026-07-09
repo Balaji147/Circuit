@@ -1,4 +1,15 @@
-const ComboBox = ({label, comboValues, onChangeVal, value})=>{
+import React from "react";
+import type{ NameValuesInterface, ValueInterface } from "../types/filter.types";
+
+interface ComboBoxProps{
+    label:string;
+    comboValues:NameValuesInterface[];
+    onChangeVal:(e:React.ChangeEvent<HTMLSelectElement>) => void;
+    comboValue?:string | undefined
+}
+
+const ComboBox = ({label, comboValues, onChangeVal, comboValue}:ComboBoxProps)=>{
+    
     return(
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
@@ -9,7 +20,7 @@ const ComboBox = ({label, comboValues, onChangeVal, value})=>{
             bg-white text-gray-800 focus:outline-none 
             focus:ring-2 focus:ring-gray-800"
             name={label}
-            value={value || ""}
+            value={comboValue ?? ""}
             onChange={onChangeVal} >
                 {comboValues.map(combo=>
                     <option className="text-gray-800" value={combo.value} key={combo.value}>{combo.name}</option>
