@@ -1,10 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom"
-import { useSelector } from "react-redux"
 import { selectCurrentUser } from "../store/usersStore/user.selector"
+import { useAppSelector } from "../hooks/hooks"
 
 const ProtectedRoute = () => {
 
-  const user = useSelector(selectCurrentUser)
+  const user = useAppSelector(selectCurrentUser)
 
   if (!user) {
     return <Navigate to="/login" replace />

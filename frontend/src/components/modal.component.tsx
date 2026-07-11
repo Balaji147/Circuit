@@ -5,10 +5,10 @@ import { useEffect, useContext } from "react";
 import { statusValues, levelValues } from "../partner/constVals.partner";
 import { api } from "../helpers/axios.config";
 import { ErrorInfoContext } from "../contexts/errorHandler.context";
-import { useDispatch } from "react-redux";
 import { fetchTaskList } from "../store/tasksStore/tasks.reducer";
 import type{ TaskDataProps } from "../types/filter.types";
 import type { NullAllowedType } from "../types/common.types";
+import { useAppDispatch } from "../hooks/hooks";
 
 interface InitFieldsValues{
     title: string,
@@ -19,18 +19,25 @@ interface InitFieldsValues{
     priority: string
 }
 
-interface FormModalProps{
+interface FormModalEditProps{
+    taskData:TaskDataProps;
     setIsModalOpen:React.Dispatch<React.SetStateAction<NullAllowedType<string | boolean>>>;
-    taskData?:NullAllowedType<TaskDataProps>;
-    setDataToEdit?:React.Dispatch<React.SetStateAction<NullAllowedType<TaskDataProps>>>
+    setDataToEdit:React.Dispatch<React.SetStateAction<NullAllowedType<TaskDataProps>>>
 }
+
+interface FormModalCrtProps{
+    taskData?:null;
+    setIsModalOpen:React.Dispatch<React.SetStateAction<NullAllowedType<string | boolean>>>;
+    setDataToEdit?:()=>void
+}
+
 
 interface UserListProps{
     value:number;
     name:string
 }
 
-const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit}: FormModalProps) => {
+const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit}: FormModalEditProps | FormModalCrtProps ) => {
 
     const INIT_VALUES:InitFieldsValues = {
         title: taskData?.task_title || "",
@@ -41,7 +48,7 @@ const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit}: FormModalP
         priority: taskData?.task_priority_level || "low"
     }
     const { errorInfo, setErrorInfo, clearErrorInfo } = useContext(ErrorInfoContext)
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const [fieldValues, setFieldValues] = useState<InitFieldsValues>(INIT_VALUES)
     const [userList, setUserList] = useState<UserListProps[]>([])
 
@@ -104,7 +111,7 @@ const FormModal = ({ setIsModalOpen, taskData = null, setDataToEdit}: FormModalP
 
         if(taskData){
             await api.put(`tasks/updateTask/${taskData.circuit_task_info_id}`, fieldValues)
-            setDataToEdit(null)
+            setDataToEdit?.(null)
         }else{
             await api.post("tasks/createTask", fieldValues)
         }

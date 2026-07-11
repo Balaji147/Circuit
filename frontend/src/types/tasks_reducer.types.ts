@@ -1,15 +1,23 @@
 import type { NullAllowedType } from "./common.types";
 import type { PeriorityType, StatusType } from "./filter.types"
 export interface TaskInitInterface{
-    user_tasks:NullAllowedType<TaskInfoInterface>,
+    user_tasks:NullAllowedType<TaskInfoInterface[]>,
     all_tasks:NullAllowedType<AllTaskInterface>,
     loading:boolean,
     error:null | boolean | unknown
 }
 
-type TaskKeys = "all_tasks" | "over_due_task" | "todo_task" | "in_progress_task" | "done_task";
+export interface TaskReducerInterface{
+    tasks:TaskInitInterface
+}
 
-export type AllTaskInterface = Record<TaskKeys, number>;
+export type AllTaskInterface = {
+    all_tasks_cnt:number
+    over_due_task:number
+    todo_task:number
+    in_progress_task:number
+    done_task:number
+}
 
 export interface TaskInfoInterface{
     index_no:number

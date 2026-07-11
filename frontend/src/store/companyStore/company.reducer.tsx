@@ -1,7 +1,30 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { api } from "../../helpers/axios.config"
+import type { NullAllowedType } from "../../types/common.types"
 
-export const COMPANY_INIT_STATE = {
+export interface CompanyInfoInterface{
+    circuit_company_info_id:number
+    company_name:string
+    type_of_company:string | null
+    company_sites_link: string | null
+    company_logo: string | "https://shorturl.at/G8gt8"
+    task_id_string:string
+    next_task_number:number
+    admin_name:string
+    employee_cnt:number
+}
+
+export interface CompanyInitValues{
+    company_data:NullAllowedType<CompanyInfoInterface>
+    loading:boolean
+    error:null | boolean | unknown
+}
+
+export interface CompanyInterface{
+    company:CompanyInitValues
+}
+
+export const COMPANY_INIT_STATE:CompanyInitValues = {
     company_data:null,
     loading:true,
     error:null

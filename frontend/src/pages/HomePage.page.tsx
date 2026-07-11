@@ -2,15 +2,16 @@ import dashboard_icon from "../icons/dashboard_icon.svg"
 import { Header } from "../components/header.component"
 import SummaryCard from "../components/dshboard_card.component"
 import { useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
 import {useNavigate} from "react-router-dom"
 import { fetchTaskList } from "../store/tasksStore/tasks.reducer"
 import { selectAllTasks } from "../store/tasksStore/tasks.selector"
 import { fetchCompanyInfo } from "../store/companyStore/company.reducer"
 import { selectCompanyInfo } from "../store/companyStore/company.selector"
+import { useAppDispatch, useAppSelector } from "../hooks/hooks"
+import { selectCurrentUser } from "../store/usersStore/user.selector"
 
 const HomePage = ()=>{
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     useEffect(()=>{
         dispatch(fetchTaskList())
         dispatch(fetchCompanyInfo())
@@ -18,9 +19,9 @@ const HomePage = ()=>{
 
     const navigate = useNavigate()
 
-    const companyInfo = useSelector(selectCompanyInfo)
-
-    const all_user_tasks = useSelector(selectAllTasks)
+    const companyInfo = useAppSelector(selectCompanyInfo)
+    const userInfo = useAppSelector(selectCurrentUser)
+    const all_user_tasks = useAppSelector(selectAllTasks)
     return (
         <div>
             {/* Header */}
@@ -55,12 +56,12 @@ const HomePage = ()=>{
                     <div className="hidden md:block h-10 w-px bg-gray-300"></div>
 
                     {/* Employee Count */}
-                    <div className="flex flex-col items-center justify-center px-2" onClick={()=>navigate("employeeList")}>
+                    <div className="flex flex-col items-center justify-center px-2" onClick={()=>navigate(userInfo?.user_role === "admin"?"employeeList":"employeeInfo")}>
                         <div className="text-base md:text-lg font-semibold text-gray-800">
-                        {companyInfo?.employee_cnt}
+                        {userInfo?.user_role === "admin"?companyInfo?.employee_cnt:userInfo?.user_name}
                         </div>
                         <div className="text-xs md:text-sm text-gray-500">
-                        Employees
+                        {userInfo?.user_role === "admin"?"Employees":"Employee Name"}
                         </div>
                     </div>
 
@@ -79,7 +80,7 @@ const HomePage = ()=>{
 
                     </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <SummaryCard Content={"Total Tasks"} Count={all_user_tasks?.all_tasks || 0}  onClickFunc={()=>navigate("userTasks")}/>
+                    <SummaryCard Content={"Total Tasks"} Count={all_user_tasks?.all_tasks_cnt || 0}  onClickFunc={()=>navigate("userTasks")}/>
                     <SummaryCard Content={"Overdue Tasks"} Count={all_user_tasks?.over_due_task || 0} />
                 </div>
 

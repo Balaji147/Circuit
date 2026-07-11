@@ -7,6 +7,7 @@ import UserTasks from "../pages/userTask.page"
 import EmployeeList from "../pages/employeeList.page"
 import ProtectedRoute from "./productedRoutes.routes"
 import { NotFoundPage } from "../pages/notFound.page"
+import EmployeeInfo from "../pages/employeeInfo.page"
 
 const HomeRoute = ()=>{
     return(
@@ -17,6 +18,7 @@ const HomeRoute = ()=>{
                 <Route element={<ProtectedRoute/>}>
                     <Route path="/" element={<HomePage/>}/>
                     <Route path="/userTasks" element={<UserTasks/>}/>
+                    <Route path="/employeeInfo" element={<EmployeeInfo/>}/>
                     <Route path="/employeeList" element={<EmployeeList/>}/>
                 </Route>
                 {/* 404 route */}

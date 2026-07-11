@@ -35,40 +35,50 @@ export const getAllTasks = async(req, res)=>{
         
         const taskInfo = {}
         const {cid, userid, user_role} = req?.user
+        
         const {Status, Priority, sr_name} = req.query
-        const valueArr = [cid, userid]
+        let userValueArr = [cid]
         let getUserTasks = `SELECT ROW_NUMBER() OVER () AS index_no, circuit_task_info_id, task_title, task_description, task_priority_level, task_status,
-        task_allocated_by, task_allocated_to, task_due_date, task_created_dttm from circuit_task_info where ct_company_id = $1 and task_allocated_to = $2`
-        let index = 3
+        task_allocated_by, task_allocated_to, task_due_date, task_created_dttm from circuit_task_info where ct_company_id = $1`
+        if(user_role != "admin"){
+            getUserTasks += ` and task_allocated_to = $2`
+            userValueArr.push(userid)
+        }
+        let index = userValueArr.length+1
         if(Status){
             getUserTasks += ` and task_status = $${index}`
-            valueArr.push(Status)
+            userValueArr.push(Status)
             index++
         }
         if(Priority){
             getUserTasks += ` and task_priority_level = $${index}`
-            valueArr.push(Priority)
+            userValueArr.push(Priority)
         }
         if(sr_name){
             getUserTasks += ` and task_title ilike $${index}`
-            valueArr.push(`%${sr_name.trim()}%`)
+            userValueArr.push(`%${sr_name.trim()}%`)
         }
         
-        let user_tasks = await pool.query(getUserTasks, valueArr)
+        let user_tasks = await pool.query(getUserTasks, userValueArr)
+        let taskValueArr = [cid]
         taskInfo.user_tasks = user_tasks.rows
-        let countOfAllTasks = `SELECT COUNT(*) AS all_tasks,
+        let countOfAllTasks = `SELECT COUNT(*) AS all_tasks_cnt,
         count(*) FILTER (where task_due_date < now() and task_status != 'done') as over_due_task,
         count(*) FILTER (where task_status = 'todo') as todo_task,
         count(*) FILTER (where task_status = 'in_progress') as in_progress_task,
         count(*) FILTER (where task_status = 'done') as done_task
-        FROM circuit_task_info where ct_company_id = $1
-        AND task_allocated_to = $2`
+        FROM circuit_task_info where ct_company_id = $1`
+        if(user_role != "admin"){
+            countOfAllTasks += ` AND task_allocated_to = $2`
+            taskValueArr.push(userid)
+        }
 
-        let all_tasks = await pool.query(countOfAllTasks, [cid, userid])
+        let all_tasks = await pool.query(countOfAllTasks, taskValueArr)
         taskInfo.all_tasks = all_tasks.rows
         
         return res.status(200).json({taskInfo})
     }catch(er){
+        console.log(er)
         return res.status(500).json({errorInfo:{all:"Fetching Failed"}})
     }
 }

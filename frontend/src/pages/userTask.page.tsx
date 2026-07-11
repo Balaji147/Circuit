@@ -3,7 +3,6 @@ import Filters from "../components/filter.component"
 import filter_icon from "../icons/filter_icon.svg"
 import { NoData } from "../partner/noData.partner"
 import task_icon from "../icons/task_icon.svg"
-import { useDispatch, useSelector } from "react-redux"
 import edit_icon from "../icons/edit_icon.svg"
 import { dataFormat } from "../helpers/format.function"
 import add_icon from "../icons/add_icon.svg"
@@ -18,17 +17,18 @@ import { setUserTasks } from "../store/tasksStore/tasks.reducer"
 import { PaginationTags } from "../components/pagination.component"
 import type{ DataActionType, UserTaskList, ValueInterface, NameIdType, TaskDataProps } from "../types/filter.types"
 import type { NullAllowedType } from "../types/common.types" 
+import { useAppDispatch, useAppSelector } from "../hooks/hooks"
 
 const UserTasks = ()=>{
 
-    const user_task_list = useSelector(selectUserTasks)
-    const selectAllTaskCnt = useSelector(selectAllTasksCnt)
+    const user_task_list = useAppSelector(selectUserTasks)
+    const selectAllTaskCnt = useAppSelector(selectAllTasksCnt)
     const [dataToEdit, setDataToEdit] = useState<NullAllowedType<TaskDataProps>>(null)
     const [dataToDlt, setDataToDlt] = useState<NullAllowedType<NameIdType>>(null)
     const [isModalOpen, setIsModalOpen] = useState<NullAllowedType<string | boolean>>(null)
     const [filterMode, setFilterMode] = useState<ValueInterface>({sr_name:"", Status:"", Priority:""})
     const [debounceName, setDebounceName] = useState<DataActionType>("")
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const openModalToEdit = (taskData:TaskDataProps)=>{
         setDataToEdit(taskData)
         setIsModalOpen("edit")
@@ -67,12 +67,12 @@ const UserTasks = ()=>{
 
         getFilteredValuesFunc()
     }, [filterMode.Status, filterMode.Priority, debounceName])
-    // user_task_list
+    
     return(
         <div className="flex flex-col min-h-[90vh]">
             <div className="flex-1">
                 <Header icon={task_icon} title={"Your Tasks"} extra_icon={add_icon} iconOnClick={openModalFunc}/>
-                {user_task_list.length > 0 ? 
+                {(user_task_list?.length ?? 0) > 0 ? 
                     <>
                         <Filters onFilterChange={onFilterChange} filterModes={filterMode} otherInfo={{"Tasks Count":selectAllTaskCnt}}/>
                         <div className="w-full overflow-x-auto bg-white rounded-xl shadow border border-gray-200 flex-1">
@@ -94,7 +94,7 @@ const UserTasks = ()=>{
                                 {/* Body */}
                                 <tbody className="divide-y divide-gray-100">
 
-                                    {user_task_list?.map((task:UserTaskList)=>
+                                    {user_task_list?.map((task:TaskDataProps)=>
                                         {
                                             let colorCode = "bg-green-100 text-green-700"
                                             const taskLevel = task?.task_priority_level
@@ -181,7 +181,7 @@ const UserTasks = ()=>{
                 }
             </div>
             {
-                user_task_list.length > 0 &&
+                (user_task_list?.length ?? 0) > 0 &&
                 <PaginationTags pageNumbers={pageNumbers}/>
             }
         </div>

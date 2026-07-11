@@ -1,5 +1,5 @@
-import { useSelector } from "react-redux"
 import { selectCurrentUser } from "../store/usersStore/user.selector"
+import { useAppSelector } from "../hooks/hooks";
 
 interface HeaderProps{
     icon?:string,
@@ -9,7 +9,7 @@ interface HeaderProps{
 }
 
 export const Header = ({icon, title, extra_icon, iconOnClick}:HeaderProps)=>{
-    const getEmployee = useSelector(selectCurrentUser)
+    const getEmployee = useAppSelector(selectCurrentUser)
     return(
          <div
             className="w-full py-3 border-b flex items-center gap-2"

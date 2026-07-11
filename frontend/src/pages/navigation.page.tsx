@@ -6,16 +6,16 @@ import circute from "../assets/circuit_logo.png"
 import OptionCard from "../components/optioncard.component"
 import close_icon from "../icons/close_icon.svg"
 import employee_icon from "../icons/employee_icon.svg"
-import { useDispatch, useSelector } from "react-redux"
 import { selectCardOpen, selectCurrentUser } from "../store/usersStore/user.selector"
 import { setCardOpen } from "../store/usersStore/user.reducer"
+import { useAppDispatch, useAppSelector } from "../hooks/hooks"
 
 const Navigation = ()=>{
 
-	const isOptCardOpen = useSelector(selectCardOpen)
-	const dispatch = useDispatch()
+	const isOptCardOpen = useAppSelector(selectCardOpen)
+	const dispatch = useAppDispatch()
 	
-    const selectUser = useSelector(selectCurrentUser)
+    const selectUser = useAppSelector(selectCurrentUser)
 
     return(
         <>
@@ -45,7 +45,7 @@ const Navigation = ()=>{
               				/>
             				</NavLink>
 
-							<NavLink to="/employeeList">
+							<NavLink to={selectUser?.user_role === "admin"?"/employeeList":"/employeeInfo"}>
 							<img
 								src={employee_icon}
 								alt="Employee Details"

@@ -34,13 +34,16 @@ export interface FiltersProps <T extends HTMLSelectElement | HTMLInputElement = 
 }
 
 export interface TaskDataProps{
+    index_no:number
+    circuit_task_info_id:number
     task_title:string;
     task_description?: string;
-    task_allocated_to?:string;
-    task_due_date?:string;
-    task_status?: StatusType;
     task_priority_level: PeriorityType;
-    circuit_task_info_id:number;
+    task_status?: StatusType;
+    task_allocated_by:number;
+    task_allocated_to?:number;
+    task_due_date:string;
+    task_created_dttm:string
 }
 
 export interface UserTaskList {

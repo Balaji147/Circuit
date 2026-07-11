@@ -4,11 +4,11 @@ import showEye_icon from "../icons/showEye.svg"
 import { ErrorInfoContext } from "../contexts/errorHandler.context"
 import { api } from "../helpers/axios.config.js"
 import WarningMessage from "../partner/warning.partner"
-import {useDispatch} from "react-redux"
 import {setUsers} from "../store/usersStore/user.reducer.jsx"
 import { isValidEmail, isValidString } from "../helpers/format.function"
 import { useNavigate } from "react-router"
 import { setCardOpen } from "../store/usersStore/user.reducer.jsx"
+import { useAppDispatch } from "../hooks/hooks"
 
 interface ActionMethods {
     action: "logon" | "login"
@@ -28,7 +28,7 @@ const AuthCard = ({action}:ActionMethods)=>{
     const [isPwdShow, setIsPwdShow] = useState<boolean>(false)
     const endpoint:string = action === "logon"?"/createUser":"/loginUser"
     const {errorInfo, setErrorInfo, clearErrorInfo} = useContext(ErrorInfoContext)
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const navigation = useNavigate()
 
     const getValuesFunc = (e:React.ChangeEvent<HTMLInputElement>)=>{

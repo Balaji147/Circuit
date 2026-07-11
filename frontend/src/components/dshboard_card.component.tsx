@@ -3,7 +3,7 @@ import type React from "react";
 interface SummaryCardProp{
     Count:number;
     Content:string;
-    onClickFunc:()=>void
+    onClickFunc?:()=>void
 }
 const SummaryCard = ({Count, Content, onClickFunc}:SummaryCardProp)=>{
     return(

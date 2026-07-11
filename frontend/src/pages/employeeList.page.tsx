@@ -6,13 +6,13 @@ import edit_icon from "../icons/edit_icon.svg"
 import delete_icon from "../icons/delete_icon.svg"
 import Filters from "../components/filter.component"
 import { api } from "../helpers/axios.config"
-import { useSelector } from "react-redux"
 import { selectCurrentUser } from "../store/usersStore/user.selector"
 import { dataFormat, capitalizeWords } from "../helpers/format.function"
 import type { NullAllowedType } from "../types/common.types"
 
 
 import EmployeeModal from "../components/employeeModal.component"
+import { useAppSelector } from "../hooks/hooks"
 
 type EmployeeModalType = NullAllowedType<string>
 
@@ -33,7 +33,7 @@ const EmployeeList = ()=>{
     
     const [employeesList, setEmployeesList] = useState<EmployeesListInterface[]>([])
     const [openEmployeeModal, setOpenEmployeeModal] = useState<EmployeeModalType>(null)
-    const currentEmployee = useSelector(selectCurrentUser)
+    const currentEmployee = useAppSelector(selectCurrentUser)
     const [filterMode, setFilterMode] = useState<EmpName>({emp_name:""})
 
     const getEmployees = async()=>{

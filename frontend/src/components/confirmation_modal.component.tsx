@@ -1,9 +1,9 @@
-import { useDispatch } from "react-redux";
 import { api } from "../helpers/axios.config";
 import { fetchTaskList } from "../store/tasksStore/tasks.reducer";
 import type { NullAllowedType } from "../types/common.types";
 import type { NameIdType } from "../types/filter.types";
 import type React from "react";
+import { useAppDispatch } from "../hooks/hooks";
 
 interface taskDataProps{
   task_id:number;
@@ -20,7 +20,7 @@ interface ConfirmModalProps{
 type er = string
 
 const ConfirmModal = ({ message, setIsModalOpen, taskData, setDataToDlt }:ConfirmModalProps) => {
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const deleteTheTaskHandle = async()=>{
         try{
           const deleteTheTask = await api.delete(`tasks/deleteTask/${taskData.task_id}`)
