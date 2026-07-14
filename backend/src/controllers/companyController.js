@@ -1,11 +1,26 @@
+import { Sequelize } from "sequelize"
 import pool from "../../db.js"
+import sequelize from "../db_.js"
+import CompanyInfo from "../models/circuit_company_info.js"
+import UsersAuth from "../models/circuit_users_auth.js"
 
 export const getCompanyInfo = async(req, res, next)=>{
     try{
         if(!req.user)
             return res.status(403).json({warningInfo:"Not Authorized"})
         const {cid} = req.user
-        const companyDataQry = `SELECT 
+        // const companyDataQry1 = await UsersAuth.findOne(
+        //     {
+        //         attributes:[["name_of_user", 'admin_name']],
+        //         where:{
+        //             ct_company_id:cid,
+        //             user_role:'admin'
+        //         },
+        //         raw:true
+        //     }
+        // )
+        // console.log("fsd",companyDataQry1)
+        const [companyData] = await sequelize.query(`SELECT 
             cci.*,
             (
                 SELECT name_of_user
@@ -21,15 +36,22 @@ export const getCompanyInfo = async(req, res, next)=>{
             ) AS employee_cnt
 
         FROM circuit_company_info cci
-        WHERE cci.circuit_company_info_id = $1;`
-        const {rows, rowCount} = await pool.query(companyDataQry, [cid])
+        WHERE cci.circuit_company_info_id = :cid`,
+        {
+            replacements:{cid},
+            type:Sequelize.QueryTypes.SELECT
+        })
+
+        console.log("fsd",companyData)
+        // const {rows, rowCount} = await pool.query(companyDataQry, [cid])
         
-        if(rowCount === 0)
+        if(!companyData)
             return res.status(404).json({warningInfo:"Seems There is no Company"})
 
-        return res.status(202).json({companyData:rows[0]})
+        return res.status(202).json({companyData})
         
     }catch(err){
+        console.log(err)
         return res.status(500).json({warningInfo:"Can't get Company Info"})
     }
 }

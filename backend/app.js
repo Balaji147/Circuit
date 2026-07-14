@@ -7,6 +7,7 @@ import userRouter from "./src/routers/userRouter.js"
 import taskRouter from "./src/routers/taskRouter.js"
 import employeeRouter from "./src/routers/employeeRouter.js"
 import companyRouter from "./src/routers/companyRouter.js"
+import sequelize from "./src/db_.js"
 import { auth } from "./src/middlewares/autheticate_user.middleware.js"
 
 dotenv.config()
@@ -29,7 +30,15 @@ app.use("/employees", employeeRouter)
 app.use("/users", userRouter)
 app.use("/tasks", taskRouter)
 
-app.listen(port, ()=>{
-    console.log(`Started At Port ${port}`)
-})
+// Test the connection instead of syncing tables
+sequelize.authenticate()
+    .then(() => {
+        console.log("Database connection established successfully.");
+        app.listen(port, () => {
+            console.log(`Connected with Port ${port}`);
+        });
+    })
+    .catch((error) => {
+        console.error("Database connection failed:", error);
+    });
 

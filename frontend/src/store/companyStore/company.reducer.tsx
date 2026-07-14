@@ -35,6 +35,7 @@ export const fetchCompanyInfo = createAsyncThunk(
     async(_, thunkAPI)=>{
         try{
             const getCompanyInfo = await api.get("company/getCompanyInfo")
+            console.log(getCompanyInfo.data.companyData)
             return getCompanyInfo.data.companyData
         }catch(err){
             return thunkAPI.rejectWithValue(err)

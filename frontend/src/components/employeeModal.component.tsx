@@ -10,10 +10,10 @@ interface EmployeeModalProps{
 }
 
 interface InitFieldsValues{
-    name:string
+    name_of_user:string
     emp_designation:string;
-    email:string;
-    password:string;
+    emp_mailid:string;
+    emp_password:string;
     admin_ind:boolean
     auto_pwd_ind:boolean
 }
@@ -23,10 +23,10 @@ type havePwdProp = boolean
 const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=>{
 
     const INIT_VALUES:InitFieldsValues = {
-        name:"",
+        name_of_user:"",
         emp_designation:"",
-        email:"",
-        password:"",
+        emp_mailid:"",
+        emp_password:"",
         admin_ind:false,
         auto_pwd_ind:false
     }
@@ -38,7 +38,7 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
     const getFieldValues = (elm:React.ChangeEvent<HTMLInputElement>)=>{
         const {name, value, checked, type} = elm.currentTarget;
         setFieldValues(prev=>({...prev, [name]:type === "checkbox" ? checked : value}))  
-
+        setErrorInfo({[name]:""})
         if(name === "auto_pwd_ind")
         {
             setHavePassword(!checked)
@@ -51,15 +51,15 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
 
         let warningInfo:Partial<InitFieldsValues> = {}
         try{
-            if(!fieldValues.name)
-                warningInfo.name = "Name Can't be Empty"
+            if(!fieldValues.name_of_user)
+                warningInfo.name_of_user = "Name Can't be Empty"
             if(!fieldValues.emp_designation)
                 warningInfo.emp_designation = "Designation Can't be Empty"
-            if(!fieldValues.email)
-                warningInfo.email = "Mail Can't be Empty"
+            if(!fieldValues.emp_mailid)
+                warningInfo.emp_mailid = "Mail Can't be Empty"
 
-            if(!fieldValues.password && havePassword)
-                warningInfo.password = "Password Can't be Empty"
+            if(!fieldValues.emp_password && havePassword)
+                warningInfo.emp_password = "Password Can't be Empty"
 
             if(Object.keys(warningInfo).length > 0){
                 setErrorInfo(warningInfo)
@@ -102,13 +102,13 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
                         </label>
                         <input
                         type="text"
-                        placeholder="Enter task title"
-                        name="name"
-                        value={fieldValues.name}
+                        placeholder="Enter Your Employee Name"
+                        name="name_of_user"
+                        value={fieldValues.name_of_user}
                         onChange={getFieldValues}
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-800"
                         />
-                        <WarningMessage warning={errorInfo.name}/>
+                        <WarningMessage warning={errorInfo.name_of_user}/>
                     </div>
 
                     {/* Designation */}
@@ -118,7 +118,7 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
                         </label>
                         <input
                         type="text"
-                        placeholder="Enter task title"
+                        placeholder="Enter the Designation"
                         name="emp_designation"
                         value={fieldValues.emp_designation}
                         onChange={getFieldValues}
@@ -134,13 +134,13 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
                         </label>
                         <input
                         type="text"
-                        placeholder="Enter task title"
-                        name="email"
-                        value={fieldValues.email}
+                        placeholder="Enter the Mail Id"
+                        name="emp_mailid"
+                        value={fieldValues.emp_mailid}
                         onChange={getFieldValues}
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-800"
                         />
-                        <WarningMessage warning={errorInfo.email}/>
+                        <WarningMessage warning={errorInfo.emp_mailid}/>
                     </div>
 
                     {/* Password */}
@@ -151,13 +151,13 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
                             </label>
                             <input
                             type="text"
-                            placeholder="Enter task title"
+                            placeholder="Enter the Initial Password"
                             name="password"
-                            value={fieldValues.password}
+                            value={fieldValues.emp_password}
                             onChange={getFieldValues}
                             className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-800"
                             />
-                            <WarningMessage warning={errorInfo.password}/>
+                            <WarningMessage warning={errorInfo.emp_password}/>
                         </div>
                     }
 
