@@ -31,14 +31,19 @@ add column user_designation text
 alter table circuit_users_auth
 add column user_temp_password text
 
-select * from circuit_users_auth
+SELECT * from circuit_users_auth where ct_company_id = 13
 
-delete from circuit_users_auth where circuit_users_auth_id = 50
+delete from circuit_users_auth where circuit_users_auth_id = 57
 
 SELECT cua.circuit_users_auth_id, cua.user_password, cua.name_of_user, cua.user_mailid, cci.circuit_company_info_id
 FROM circuit_users_auth cua join circuit_company_info cci on cua.ct_company_id =  cci.circuit_company_info_id
 WHERE cua.user_mailid = 'cristy@123.com'
 
+
+SELECT column_name, column_default, is_nullable, data_type, character_maximum_length
+FROM information_schema.columns
+WHERE table_name = 'circuit_users_auth'
+ORDER BY ordinal_position;
 
 update circuit_users_auth set user_role = 'no'
 

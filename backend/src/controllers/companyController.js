@@ -9,17 +9,7 @@ export const getCompanyInfo = async(req, res, next)=>{
         if(!req.user)
             return res.status(403).json({warningInfo:"Not Authorized"})
         const {cid} = req.user
-        // const companyDataQry1 = await UsersAuth.findOne(
-        //     {
-        //         attributes:[["name_of_user", 'admin_name']],
-        //         where:{
-        //             ct_company_id:cid,
-        //             user_role:'admin'
-        //         },
-        //         raw:true
-        //     }
-        // )
-        // console.log("fsd",companyDataQry1)
+
         const [companyData] = await sequelize.query(`SELECT 
             cci.*,
             (
@@ -41,9 +31,6 @@ export const getCompanyInfo = async(req, res, next)=>{
             replacements:{cid},
             type:Sequelize.QueryTypes.SELECT
         })
-
-        console.log("fsd",companyData)
-        // const {rows, rowCount} = await pool.query(companyDataQry, [cid])
         
         if(!companyData)
             return res.status(404).json({warningInfo:"Seems There is no Company"})

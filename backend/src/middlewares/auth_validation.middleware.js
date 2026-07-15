@@ -1,5 +1,6 @@
 import {isValidEmail, isValidString} from "../helpers/validation.function.js"
 import pool from "../../db.js"
+import {UsersAuth} from "../models/index.js"
 
 export const auth_validation = (endpoint="login")=>{
     return async(req, res, next)=>{
@@ -30,13 +31,14 @@ export const auth_validation = (endpoint="login")=>{
             }
 
             if(endpoint !== "login"){
-                const existingUser = `SELECT circuit_users_auth_id from circuit_users_auth where user_mailid = $1`
-                const {rowCount} = await pool.query(existingUser, [email])
-                if(rowCount > 0){
+                const existingUser = await UsersAuth.findOne({
+                    attributes:["circuit_users_auth_id"],
+                    where:{user_mailid:email}
+                })
+                if(existingUser){
                     return res.status(400).json({warningInfo:{all:"User Already Exist, Try Diffrent Mail id"}})
                 }
             }
-            
             next()
         }catch(er){
             next(er)

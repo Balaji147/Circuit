@@ -1,6 +1,6 @@
-import CompanyInfo from "./circuit_company_info";
-import TasksInfo from "./circuit_task_info";
-import UsersAuth from "./circuit_users_auth";
+import CompanyInfo from "./circuit_company_info.js";
+import TasksInfo from "./circuit_task_info.js";
+import UsersAuth from "./circuit_users_auth.js";
 
 TasksInfo.belongsTo(CompanyInfo, {foreignKey:"ct_company_id", as:"company"})
 CompanyInfo.hasMany(TasksInfo, {foreignKey:"ct_company_id", as:"tasks"})
