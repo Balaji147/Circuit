@@ -45,7 +45,6 @@ export const createNewTask = async(req, res, next)=>{
         
         res.status(202).json({message:"New Task Has Been Created Successfully"})
     }catch(er){
-        console.log(er)
         return res.status(500).json({errorInfo:{all:"Can't Create Task"}})
     }
 }

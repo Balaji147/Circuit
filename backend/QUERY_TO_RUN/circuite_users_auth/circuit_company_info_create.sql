@@ -8,7 +8,7 @@ create table circuit_company_info(
 
 select * from circuit_company_info
 
-delete from circuit_company_info
+delete from circuit_company_info where circuit_company_info_id = 17
 
 alter table circuit_company_info 
 drop column company_logo
@@ -35,6 +35,7 @@ as admin_name from circuit_users_auth cua where ct_company_id = 13;
 select company_name, type_of_company, company_sites_link, company_logo
 from circuit_company_info where circuit_company_info_id = 13;
 
+delete from circuit_company_info where circuit_company_info_id = 18
 
 select * from circuit_company_info where ct_company_id = 13
 

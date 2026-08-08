@@ -19,6 +19,7 @@ const HomeRoute = ()=>{
                     <Route path="/" element={<HomePage/>}/>
                     <Route path="/userTasks" element={<UserTasks/>}/>
                     <Route path="/employeeInfo" element={<EmployeeInfo/>}/>
+                    <Route path="/employeeInfo/:empID" element={<EmployeeInfo/>}/>
                     <Route path="/employeeList" element={<EmployeeList/>}/>
                 </Route>
                 {/* 404 route */}

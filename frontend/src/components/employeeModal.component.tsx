@@ -14,7 +14,9 @@ interface InitFieldsValues{
     emp_designation:string;
     emp_mailid:string;
     emp_password:string;
+    employee_id:string
     admin_ind:boolean
+    onboard_date:string
     auto_pwd_ind:boolean
 }
 
@@ -27,7 +29,9 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
         emp_designation:"",
         emp_mailid:"",
         emp_password:"",
+        employee_id:"",
         admin_ind:false,
+        onboard_date:"",
         auto_pwd_ind:false
     }
 
@@ -53,8 +57,7 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
         try{
             if(!fieldValues.name_of_user)
                 warningInfo.name_of_user = "Name Can't be Empty"
-            if(!fieldValues.emp_designation)
-                warningInfo.emp_designation = "Designation Can't be Empty"
+            
             if(!fieldValues.emp_mailid)
                 warningInfo.emp_mailid = "Mail Can't be Empty"
 
@@ -83,7 +86,7 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
     return(
         <div className="fixed inset-0 flex items-center justify-center bg-black/40 px-4">
             <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-gray-200 
-            p-6 sm:p-8 max-h-[90vh] sm:max-h-none overflow-y-auto sm:overflow-visible">
+            p-6 sm:p-8 max-h-[95vh] sm:max-h-none overflow-y-auto sm:overflow-visible">
 
                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 text-center mb-6">
                 Add Employee
@@ -127,6 +130,37 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
                         <WarningMessage warning={errorInfo.emp_designation}/>
                     </div>
 
+                    {/* Employee ID */}
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Employee ID
+                        </label>
+                        <input
+                        type="text"
+                        placeholder="Enter the Employee ID"
+                        name="employee_id"
+                        value={fieldValues.employee_id}
+                        onChange={getFieldValues}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-800"
+                        />
+                        <WarningMessage warning={errorInfo.employee_id}/>
+                    </div>
+
+                    {/* Onboard Date */}
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Onboard Date
+                        </label>
+                        <input
+                        type="date"
+                        name="onboard_date"
+                        value={fieldValues.onboard_date}
+                        onChange={getFieldValues}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-800"
+                        />
+                        <WarningMessage warning={errorInfo.onboard_date}/>
+                    </div>
+
                     {/* Mail */}
                     <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -142,24 +176,6 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
                         />
                         <WarningMessage warning={errorInfo.emp_mailid}/>
                     </div>
-
-                    {/* Password */}
-                    {havePassword &&
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Password to Start
-                            </label>
-                            <input
-                            type="text"
-                            placeholder="Enter the Initial Password"
-                            name="password"
-                            value={fieldValues.emp_password}
-                            onChange={getFieldValues}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-800"
-                            />
-                            <WarningMessage warning={errorInfo.emp_password}/>
-                        </div>
-                    }
 
                     {/* Checkbox */}
 
@@ -179,37 +195,21 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
                         </label>
                     </div>
 
-                    <div className="md:col-span-2 flex items-center gap-2">
-                        <input 
-                        type="checkbox" 
-                        id="autoPwd"
-                        name="auto_pwd_ind"
-                        checked={fieldValues.auto_pwd_ind}
-                        onChange={getFieldValues}
-                        />
-                        <label
-                        htmlFor="autoPwd"
-                        className="text-sm font-medium text-gray-700"
-                        >
-                        Give Random Password
-                        </label>
-                    </div>
-
                     {/* Buttons */}
                     <div className="md:col-span-2 flex justify-end gap-3 pt-4">
                         <button
-                        type="button"
-                        onClick={() => setOpenEmployeeModal(null)}
-                        className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+                            type="button"
+                            onClick={() => setOpenEmployeeModal(null)}
+                            className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
                         >
-                        Close
+                            Close
                         </button>
 
                         <button
-                        type="submit"
-                        className="px-5 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition"
+                            type="submit"
+                            className="px-5 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition"
                         >
-                        Save
+                            Save
                         </button>
                     </div>
 

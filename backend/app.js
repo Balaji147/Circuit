@@ -30,15 +30,21 @@ app.use("/employees", employeeRouter)
 app.use("/users", userRouter)
 app.use("/tasks", taskRouter)
 
-// Test the connection instead of syncing tables
-sequelize.authenticate()
-    .then(() => {
+const startServer = async()=>{
+    try{
+        await sequelize.authenticate()
         console.log("Database connection established successfully.");
+
+        await sequelize.sync({ alter: true });
+        console.log("Models synchronized");
+
         app.listen(port, () => {
             console.log(`Connected with Port ${port}`);
         });
-    })
-    .catch((error) => {
-        console.error("Database connection failed:", error);
-    });
+    }
+    catch(err){
+        console.log(err)
+    }
+}
 
+startServer()

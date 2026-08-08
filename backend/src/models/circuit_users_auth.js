@@ -9,9 +9,9 @@ const UsersAuth = sequelize.define("UsersAuth", {
         autoIncrement: true, // Handles 'generated always as identity'
         allowNull: false
     },
-    name_of_user: {
-        type: DataTypes.TEXT,
-        allowNull: false
+    name_of_user:{
+        type:DataTypes.TEXT,
+        allowNull:false,
     },
     user_mailid: {
         type: DataTypes.STRING, // Sequelize uses standard types, PostgreSQL will treat it as 'citext' via your DB
@@ -36,15 +36,7 @@ const UsersAuth = sequelize.define("UsersAuth", {
         type: DataTypes.BIGINT,
         allowNull: true
     },
-    user_designation: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
     user_temp_password: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    employee_id: {
         type: DataTypes.TEXT,
         allowNull: true
     }

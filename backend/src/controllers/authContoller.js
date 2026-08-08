@@ -2,30 +2,42 @@ import bcrypt from "bcryptjs"
 import pool from "../../db.js"
 import jwt from "jsonwebtoken"
 import {generateCompanyId} from "../helpers/partner.functions.js"
-import {CompanyInfo, UsersAuth} from "../models/index.js"
+import {CompanyInfo, UsersAuth, UsersInfo} from "../models/index.js"
+import sequelize from "../db_.js"
 
 const jwt_key = process.env.JWT_SECRET_KEY
 
 export const authCreateUser = async(req, res, next)=>{
-    const client = await pool.connect()
+    const transaction = await sequelize.transaction()
     try{
         let {name, company_name, email, password} = req.body
         const hashedPWD = await bcrypt.hash(password, 10)
-        await client.query("BEGIN")
         const unique_id = generateCompanyId(company_name)
         const createNewCompany = await CompanyInfo.create(
-            {company_name}
+            {company_name},
+            {transaction}
         )
         
         const company_id = createNewCompany.circuit_company_info_id
-        const {circuit_users_auth_id, name_of_user, user_role, user_mailid, ct_company_id} = await UsersAuth.create({
-            name_of_user:name,
-            user_mailid:email,
-            user_role:"admin",
-            user_password:hashedPWD,
-            ct_company_id:company_id
-        })
+        const {circuit_users_auth_id, user_role, name_of_user, user_mailid, ct_company_id} = await UsersAuth.create(
+            {
+                name_of_user:name,
+                user_mailid:email,
+                user_role:"admin",
+                user_password:hashedPWD,
+                ct_company_id:company_id
+            },
+            {transaction}
+        )
         
+        await UsersInfo.create(
+            {
+                ref_users_auth_id:circuit_users_auth_id,
+                ref_company_info_id:company_id,
+                user_designation:"Admin"
+            },
+            {transaction}
+        )
         const payload = {userid:circuit_users_auth_id, user_name:name_of_user, user_role:user_role, user_mailid:user_mailid, cid:ct_company_id}
     
         const token = jwt.sign(payload, jwt_key, {expiresIn:'60m'})
@@ -40,9 +52,10 @@ export const authCreateUser = async(req, res, next)=>{
             
             return res.json({message:"User Registration Successfull"})
         }
-
+        await transaction.commit()
         return res.status(500).json({errorInfo:{all:"Registration Failed"}})
     }catch(er){
+        await transaction.rollback()
         next(er)
     }
 }
@@ -53,9 +66,9 @@ export const authLoginUser = async(req, res, next)=>{
         const existingUser = await UsersAuth.findOne({
             attributes:[
                 "circuit_users_auth_id",
+                "name_of_user",
                 "user_password",
                 "user_role",
-                "name_of_user",
                 "user_mailid"
             ],
             include:{

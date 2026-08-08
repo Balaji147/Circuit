@@ -22,3 +22,10 @@ export const pageCnts:NameValuesInterface[] = [
     {value:10, name:10},
     {value:30, name:30},
 ]
+
+export const allowedGenders:NameValuesInterface[] = [
+    {value:"M", name:"Male"},
+    {value:"F", name:"Female"},
+    {value:"O", name:"Others"},
+    {value:"N", name:"Prefer To Not Specify"},
+]

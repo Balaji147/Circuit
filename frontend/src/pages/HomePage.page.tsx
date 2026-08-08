@@ -44,10 +44,10 @@ const HomePage = ()=>{
                         />
                         <div className="text-left">
                         <div className="text-base md:text-lg font-semibold text-gray-800">
-                            Company Name
+                            {companyInfo?.company_name}
                         </div>
                         <div className="text-xs md:text-sm text-gray-500">
-                            {companyInfo?.company_name}
+                            Company Name
                         </div>
                         </div>
                     </div>
@@ -58,10 +58,10 @@ const HomePage = ()=>{
                     {/* Employee Count */}
                     <div className="flex flex-col items-center justify-center px-2" onClick={()=>navigate(userInfo?.user_role === "admin"?"employeeList":"employeeInfo")}>
                         <div className="text-base md:text-lg font-semibold text-gray-800">
-                        {userInfo?.user_role === "admin"?companyInfo?.employee_cnt:userInfo?.user_name}
+                            {userInfo?.user_role === "admin"?companyInfo?.employee_cnt:userInfo?.user_name}
                         </div>
                         <div className="text-xs md:text-sm text-gray-500">
-                        {userInfo?.user_role === "admin"?"Employees":"Employee Name"}
+                            {userInfo?.user_role === "admin"?"Employees":"Employee Name"}
                         </div>
                     </div>
 

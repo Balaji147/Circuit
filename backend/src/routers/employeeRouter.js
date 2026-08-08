@@ -5,6 +5,6 @@ const router = Router()
 
 router.get("/getEmployeesList", getEmployeesList)
 
-router.post("/insertEmployee", auth_validation("admin"), insertEmployee)
+router.post("/insertEmployee", insertEmployee)
 
 export default router

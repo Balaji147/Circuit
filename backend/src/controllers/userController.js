@@ -1,13 +1,16 @@
 import { where } from "sequelize"
 import UsersAuth from "../models/circuit_users_auth.js"
 
-export const getUser = async(req, res)=>{
+export const getUsers = async(req, res)=>{
     try{
         if(!req.user)
             return res.status(401).json({errorInfo:{all:"User Not Authorized"}})
-        const {cid} = req.user
+        const {cid, user_role, userid} = req.user
+        const whereConditions = {ct_company_id:cid}
+        if(user_role !== "admin")
+            whereConditions.circuit_users_auth_id = userid
         const getAllUsers = await UsersAuth.findAll(
-            {
+        {
                 attributes:["circuit_users_auth_id", "name_of_user"],
                 where:{
                     ct_company_id:cid
