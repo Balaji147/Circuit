@@ -15,8 +15,8 @@ const Navigation = ()=>{
 	const isOptCardOpen = useAppSelector(selectCardOpen)
 	const dispatch = useAppDispatch()
 	
-    const selectUser = useAppSelector(selectCurrentUser)
-
+    const currentUser = useAppSelector(selectCurrentUser)
+	console.log("user", currentUser)
     return(
         <>
         	<nav className="w-full bg-white border-b shadow-sm">
@@ -35,7 +35,7 @@ const Navigation = ()=>{
 
       			{/* Center - Navigation Icons */}
       			<div className="flex items-center justify-center gap-5 sm:gap-6">
-        			{selectUser && (
+        			{currentUser && (
           				<>
             				<NavLink to="/">
               					<img
@@ -45,7 +45,7 @@ const Navigation = ()=>{
               				/>
             				</NavLink>
 
-							<NavLink to={selectUser?.user_role === "admin"?"/employeeList":"/employeeInfo"}>
+							<NavLink to={currentUser?.user_role === "admin"?"/employeeList":"/employeeInfo"}>
 							<img
 								src={employee_icon}
 								alt="Employee Details"

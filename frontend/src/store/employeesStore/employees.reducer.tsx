@@ -5,12 +5,14 @@ import type { NullAllowedType } from "../../types/common.types";
 
 export interface EmployeesStateInterface{
     employees_data:NullAllowedType<EmployeesInterface[]> | undefined
+    employee_data:NullAllowedType<EmployeesInterface> | undefined
     loading:Boolean,
     error:unknown | null
 }
 
 export const EMPLOYEES_INIT_STATE:EmployeesStateInterface = {
     employees_data:[],
+    employee_data:null,
     loading:false,
     error:null,
 }
@@ -39,9 +41,8 @@ export const employeeSlicer = createSlice({
     name:"employees",
     initialState:EMPLOYEES_INIT_STATE,
     reducers:{
-        setEmployeesInfo(state, action){
-            console.log("payload",current(state.employees_data))
-            state.employees_data = getEmployeeWithId(state.employees_data, action.payload)
+        setEmployeeInfo(state, action){
+            state.employee_data = getEmployeeWithId(state.employees_data, action.payload)
             state.loading = false,
             state.error = null
         }
@@ -64,6 +65,6 @@ export const employeeSlicer = createSlice({
     }
 })
 
-export const { setEmployeesInfo} = employeeSlicer.actions
+export const { setEmployeeInfo} = employeeSlicer.actions
 
 export const employeesReducer = employeeSlicer.reducer

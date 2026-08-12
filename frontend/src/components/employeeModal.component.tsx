@@ -3,10 +3,11 @@ import { ErrorInfoContext } from "../contexts/errorHandler.context"
 import WarningMessage from "../partner/warning.partner"
 import type { NullAllowedType } from "../types/common.types";
 import { api } from "../helpers/axios.config"
+import { useAppDispatch } from "../hooks/hooks";
+import { fetchEmployeesInfo } from "../store/employeesStore/employees.reducer";
 
 interface EmployeeModalProps{
     setOpenEmployeeModal:React.Dispatch<React.SetStateAction<NullAllowedType<string>>>
-    getEmployees:()=>void
 }
 
 interface InitFieldsValues{
@@ -17,12 +18,10 @@ interface InitFieldsValues{
     employee_id:string
     admin_ind:boolean
     onboard_date:string
-    auto_pwd_ind:boolean
 }
 
-type havePwdProp = boolean
 
-const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=>{
+const EmployeeModal = ({setOpenEmployeeModal}:EmployeeModalProps)=>{
 
     const INIT_VALUES:InitFieldsValues = {
         name_of_user:"",
@@ -32,22 +31,16 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
         employee_id:"",
         admin_ind:false,
         onboard_date:"",
-        auto_pwd_ind:false
     }
 
     const [fieldValues, setFieldValues] = useState<InitFieldsValues>(INIT_VALUES)
     const { errorInfo, setErrorInfo, clearErrorInfo } = useContext(ErrorInfoContext)
-    const [havePassword, setHavePassword] = useState<havePwdProp>(true)
+    const dispatch = useAppDispatch()
 
     const getFieldValues = (elm:React.ChangeEvent<HTMLInputElement>)=>{
         const {name, value, checked, type} = elm.currentTarget;
         setFieldValues(prev=>({...prev, [name]:type === "checkbox" ? checked : value}))  
         setErrorInfo({[name]:""})
-        if(name === "auto_pwd_ind")
-        {
-            setHavePassword(!checked)
-            if(checked) setFieldValues((prev)=>({...prev, password:""}))
-        }
     }
 
     const createEmployeeFunc = async(elm:React.SyntheticEvent<HTMLFormElement>)=>{
@@ -61,23 +54,19 @@ const EmployeeModal = ({setOpenEmployeeModal, getEmployees}:EmployeeModalProps)=
             if(!fieldValues.emp_mailid)
                 warningInfo.emp_mailid = "Mail Can't be Empty"
 
-            if(!fieldValues.emp_password && havePassword)
-                warningInfo.emp_password = "Password Can't be Empty"
-
             if(Object.keys(warningInfo).length > 0){
                 setErrorInfo(warningInfo)
                 return
             }
 
             clearErrorInfo()
-
             if(fieldValues){
                 await api.post(`/employees/insertEmployee`, fieldValues)
                 setOpenEmployeeModal(null)
             }
+            dispatch(fetchEmployeesInfo())
             setOpenEmployeeModal(null)
             setFieldValues(INIT_VALUES)
-            getEmployees()
         }catch(er){
             setErrorInfo((prev)=>({...prev, email:er?.response?.data?.warningInfo?.all}))
         }

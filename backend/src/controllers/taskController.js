@@ -116,6 +116,38 @@ export const getAllTasks = async(req, res)=>{
     }
 }
 
+export const getTaskById = async(req, res)=>{
+    try{
+        const {taskId} = req.params
+        const {userid, user_role} = req.user
+        
+        if(!taskId) return res.status(404).json({errorInfo:{all:"Failed To get task id"}})
+        const task_info = await TasksInfo.findByPk(
+            taskId,
+            {
+                include:[
+                    {
+                        model:UsersAuth,
+                        attributes:["name_of_user"],
+                        as:"assigner"
+                    }
+                ],
+                nest:true,
+                raw:true
+            }
+        )
+        if(!task_info)
+            return res.status(404).json({errorInfo:{all:"Task is Not Exist"}})
+
+        if(task_info.task_allocated_to !== userid && user_role !== "admin")
+            return res.status(403).json({errorInfo:{all:"You are not authorized"}})
+        console.log(task_info)
+        res.status(200).json({task_info})
+    }catch(err){
+        res.status(500)
+    }
+}
+
 export const updateTask = async(req, res)=>{
     try{
         if(!req.user)

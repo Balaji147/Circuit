@@ -1,23 +1,35 @@
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { Header } from "../components/header.component"
 import { useParams } from "react-router"
 import employees_icon from "../icons/employee_icon.svg"
 import { useAppDispatch, useAppSelector } from "../hooks/hooks"
-import { fetchEmployeesInfo, setEmployeesInfo } from "../store/employeesStore/employees.reducer"
+import { fetchEmployeesInfo, setEmployeeInfo } from "../store/employeesStore/employees.reducer"
 import { selectEmployeeInfo, selectEmployeesList } from "../store/employeesStore/employees.selector"
+import { selectCurrentUser } from "../store/usersStore/user.selector"
 
 const EmployeeInfo = ()=>{
     const dispatch = useAppDispatch()
+    const {user_role} = useAppSelector(selectCurrentUser)
+    const employeeInfoById = useAppSelector(selectEmployeeInfo)
+    const employeeInfoByAdmin = useAppSelector(selectEmployeesList)[0]
     const {empID} = useParams()
+    console.log(user_role)
     useEffect(()=>{
-        dispatch(setEmployeesInfo(empID))
-    },[empID])
-    
-    const employeeInfo = useAppSelector(selectEmployeesList)
-    console.log("employeeInfo", employeeInfo)
+        if(!user_role) return
+        if(user_role === "admin"){
+            if(!empID) return
+            dispatch(setEmployeeInfo(empID))
+            return 
+        }
+        dispatch(fetchEmployeesInfo())
+    },[empID, user_role, dispatch])
 
-    // const employeeInfo = useAppSelector(selectEmployeeInfo(empID))[0]
-     
+    const employeeInfo = useMemo(()=>{
+        if(user_role === "admin")
+            return employeeInfoById
+        else return employeeInfoByAdmin
+    },[user_role, employeeInfoById, employeeInfoByAdmin])
+
     return(
         <div>
             <Header icon={employees_icon} title="Your Info" />
@@ -35,9 +47,9 @@ const EmployeeInfo = ()=>{
 
                     <div className="flex gap-2">
                         <h2 className="text-2xl font-semibold text-gray-800">
-                            {employeeInfo.name_of_user}
+                            {employeeInfo?.name_of_user}
                         </h2>
-                        {employeeInfo.user_role === "admin" &&
+                        {employeeInfo?.user_role === "admin" &&
                             <span className="text-sm font-medium text-blue-800 bg-green-200 rounded-xl p-1">Admin</span>
                         }
                     </div>

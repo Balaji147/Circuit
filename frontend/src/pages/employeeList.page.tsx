@@ -3,35 +3,32 @@ import employees_icon from "../icons/employee_icon.svg"
 import add_icon from "../icons/add_icon.svg"
 import React, { useEffect, useState } from "react"
 import Filters from "../components/filter.component"
-import { api } from "../helpers/axios.config"
 import { useNavigate } from "react-router"
 import { dataFormat, capitalizeWords } from "../helpers/format.function"
 import type { NullAllowedType } from "../types/common.types"
 import EmployeeModal from "../components/employeeModal.component"
 import { useAppDispatch, useAppSelector } from "../hooks/hooks"
-import type {EmployeesInterface} from "../types/employees.types"
 import { fetchEmployeesInfo } from "../store/employeesStore/employees.reducer"
 import { selectEmployeesList } from "../store/employeesStore/employees.selector"
 
 type EmployeeModalType = NullAllowedType<string>
 
-interface EmployeesListInterface {
-    circuit_users_auth_id:number,
-    index_no:number,
-    name_of_user:string,
-    user_role:string,
-    employee_id:string,
-    user_mailid:string,
-    user_designation:string,
-    created_at:string,
-    userInfo:EmployeesInterface
-}
+// interface EmployeesListInterface {
+//     circuit_users_auth_id:number,
+//     index_no:number,
+//     name_of_user:string,
+//     user_role:string,
+//     employee_id:string,
+//     user_mailid:string,
+//     user_designation:string,
+//     created_at:string,
+//     userInfo:EmployeesInterface
+// }
 
 type EmpName = {emp_name:string}
 
 const EmployeeList = ()=>{
     
-    // const [employeesList, setEmployeesList] = useState<EmployeesListInterface[]>([])
     const [openEmployeeModal, setOpenEmployeeModal] = useState<EmployeeModalType>(null)
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
@@ -39,25 +36,16 @@ const EmployeeList = ()=>{
 
     useEffect(()=>{
         dispatch(fetchEmployeesInfo())
-    },[])
+    },[dispatch])
 
     const employeesData = useAppSelector(selectEmployeesList)
-    console.log("data",employeesData)
-    // const getEmployees = async()=>{
-    //     const employees = await api.get("employees/getEmployeesList", {params:filterMode})
-    //     if(employees)
-    //         setEmployeesList(employees.data.rows)
-    // }
-    // useEffect(()=>{
-    //     getEmployees()
-    // },[filterMode])
 
     const onFilterChange = (elm:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>)=>{
         const {name, value} = elm.currentTarget
         setFilterMode((prev)=>({...prev, [name]:value}))
     }
     
-    const onNavigate = (navId)=>{
+    const onNavigate = (navId:number)=>{
         navigate(`/employeeInfo/${navId}`)
     }
 
@@ -126,10 +114,9 @@ const EmployeeList = ()=>{
                     </div>
                 </>
             }
-            {/* {openEmployeeModal && openEmployeeModal === "create" && 
+            {openEmployeeModal && openEmployeeModal === "create" && 
                 <EmployeeModal 
-                    setOpenEmployeeModal={setOpenEmployeeModal}
-                    getEmployees={getEmployees}/>} */}
+                    setOpenEmployeeModal={setOpenEmployeeModal}/>}
         </div>
     )
 }

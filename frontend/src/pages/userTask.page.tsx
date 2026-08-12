@@ -18,6 +18,8 @@ import { PaginationTags } from "../components/pagination.component"
 import type{ DataActionType, UserTaskList, ValueInterface, NameIdType, TaskDataProps } from "../types/filter.types"
 import type { NullAllowedType } from "../types/common.types" 
 import { useAppDispatch, useAppSelector } from "../hooks/hooks"
+import { useNavigate } from "react-router"
+import { StatusComponent } from "../components/support.component"
 
 const UserTasks = ()=>{
 
@@ -28,6 +30,7 @@ const UserTasks = ()=>{
     const [isModalOpen, setIsModalOpen] = useState<NullAllowedType<string | boolean>>(null)
     const [filterMode, setFilterMode] = useState<ValueInterface>({sr_name:"", Status:"", Priority:""})
     const [debounceName, setDebounceName] = useState<DataActionType>("")
+    const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const openModalToEdit = (taskData:TaskDataProps)=>{
         setDataToEdit(taskData)
@@ -57,6 +60,9 @@ const UserTasks = ()=>{
     }
     const openModalFunc = ()=>{
         setIsModalOpen("create")
+    }
+    const navigateTask = (task_id)=>{
+        navigate(`/userTasks/taskInfo/${task_id}`)
     }
     useEffect(()=>{
         const getFilteredValuesFunc = async()=>{
@@ -96,14 +102,9 @@ const UserTasks = ()=>{
 
                                     {user_task_list?.map((task:TaskDataProps)=>
                                         {
-                                            let colorCode = "bg-green-100 text-green-700"
-                                            const taskLevel = task?.task_priority_level
-                                            if(taskLevel === "medium")
-                                                colorCode = "bg-amber-100 text-amber-700"
-                                            else if(taskLevel === "high")
-                                                colorCode = "bg-red-100 text-red-700"
+                                            
                                             return(
-                                                <tr className="hover:bg-gray-50 transition" key={task.circuit_task_info_id}>
+                                                <tr className="hover:bg-gray-50 transition" key={task.circuit_task_info_id} onClick={()=>navigateTask(task?.circuit_task_info_id)}>
                                                     <td className="px-6 py-4 font-medium text-gray-700">{task.index_no}</td>
 
                                                     <td className="px-6 py-4 text-gray-800">
@@ -117,9 +118,7 @@ const UserTasks = ()=>{
                                                     </td>
 
                                                     <td className="px-6 py-4 text-gray-800">
-                                                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${colorCode}`}>
-                                                            {task?.task_priority_level}
-                                                        </span>
+                                                        <StatusComponent taskLevel={task?.task_priority_level}/>
                                                     </td>
 
                                                     <td className="px-6 py-4 text-gray-600">
@@ -164,11 +163,6 @@ const UserTasks = ()=>{
                                 />
                             ) : null
                         )}
-                        {isModalOpen === "create" && (
-                            <FormModal
-                                setIsModalOpen={setIsModalOpen}
-                            />
-                        )}
                     </>:
                     (
                         (filterMode.Priority || filterMode.Status || filterMode.sr_name)?
@@ -184,6 +178,11 @@ const UserTasks = ()=>{
                 (user_task_list?.length ?? 0) > 0 &&
                 <PaginationTags pageNumbers={pageNumbers}/>
             }
+            {isModalOpen === "create" && (
+                <FormModal
+                    setIsModalOpen={setIsModalOpen}
+                />
+            )}
         </div>
     )
 }

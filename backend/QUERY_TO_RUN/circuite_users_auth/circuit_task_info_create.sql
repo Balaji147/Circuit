@@ -10,11 +10,12 @@ CREATE TABLE circuit_task_info (
 )
 
 select * from circuit_task_info
-
+update circuit_task_info set task_unique_id = 'TES-00002' where circuit_task_info_id
+=31
 alter table circuit_task_info 
 alter column task_priority_level drop default 
 
-
+dele
 
 SELECT COUNT(*) AS overdue_count
 FROM circuit_task_info
