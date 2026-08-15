@@ -7,6 +7,7 @@ import userRouter from "./src/routers/userRouter.js"
 import taskRouter from "./src/routers/taskRouter.js"
 import employeeRouter from "./src/routers/employeeRouter.js"
 import companyRouter from "./src/routers/companyRouter.js"
+import taskHistRouter from "./src/routers/taskHistRouter.js"
 import sequelize from "./src/db_.js"
 import { auth } from "./src/middlewares/autheticate_user.middleware.js"
 
@@ -29,6 +30,7 @@ app.use("/company", companyRouter)
 app.use("/employees", employeeRouter)
 app.use("/users", userRouter)
 app.use("/tasks", taskRouter)
+app.use("/tasksHist", taskHistRouter)
 
 const startServer = async()=>{
     try{

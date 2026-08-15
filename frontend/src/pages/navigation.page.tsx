@@ -16,7 +16,6 @@ const Navigation = ()=>{
 	const dispatch = useAppDispatch()
 	
     const currentUser = useAppSelector(selectCurrentUser)
-	console.log("user", currentUser)
     return(
         <>
         	<nav className="w-full bg-white border-b shadow-sm">

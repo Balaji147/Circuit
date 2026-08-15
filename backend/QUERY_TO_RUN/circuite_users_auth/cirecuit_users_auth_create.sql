@@ -39,7 +39,10 @@ SELECT cua.circuit_users_auth_id, cua.user_password, cua.name_of_user, cua.user_
 FROM circuit_users_auth cua join circuit_company_info cci on cua.ct_company_id =  cci.circuit_company_info_id
 WHERE cua.user_mailid = 'cristy@123.com'
 
+select * from circuit_task_history
 
+alter table circuit_task_history
+add column history_for String not null default 'insert'
 
 SELECT column_name, column_default, is_nullable, data_type, character_maximum_length
 FROM information_schema.columns

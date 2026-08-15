@@ -3,6 +3,7 @@ import pool from "../../db.js"
 import CompanyInfo from "../models/circuit_company_info.js"
 import UsersAuth from "../models/circuit_users_auth.js"
 import TasksInfo from "../models/circuit_task_info.js"
+import TaskHistory from "../models/circuit_task_history.js"
 
 export const createNewTask = async(req, res, next)=>{
     try{
@@ -31,7 +32,7 @@ export const createNewTask = async(req, res, next)=>{
         let current_task_number = next_task_number - 1
 
         let insert_task_id = `${task_id_string}-${String(current_task_number).padStart(5, "0")}`
-        const createNewTaskQry = await TasksInfo.create({
+        const {circuit_task_info_id, ct_company_id, task_status, task_allocated_by, task_allocated_to, task_description} = await TasksInfo.create({
             task_title:title,
             task_description:desc,
             task_priority_level:priority,
@@ -42,9 +43,19 @@ export const createNewTask = async(req, res, next)=>{
             ct_company_id:cid,
             task_unique_id:insert_task_id
         })
-        
+
+        const insertTaskHistory = await TaskHistory.create({
+            ref_company_id:ct_company_id,
+            ref_task_id:circuit_task_info_id,
+            task_status,
+            task_allocated_by,
+            task_allocated_to,
+            task_status_desc:task_description
+        })
+        await pool.query("COMMIT")
         res.status(202).json({message:"New Task Has Been Created Successfully"})
     }catch(er){
+        await pool.query("ROLLBACK")
         return res.status(500).json({errorInfo:{all:"Can't Create Task"}})
     }
 }
@@ -141,7 +152,6 @@ export const getTaskById = async(req, res)=>{
 
         if(task_info.task_allocated_to !== userid && user_role !== "admin")
             return res.status(403).json({errorInfo:{all:"You are not authorized"}})
-        console.log(task_info)
         res.status(200).json({task_info})
     }catch(err){
         res.status(500)

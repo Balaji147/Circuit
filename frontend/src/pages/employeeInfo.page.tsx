@@ -13,7 +13,6 @@ const EmployeeInfo = ()=>{
     const employeeInfoById = useAppSelector(selectEmployeeInfo)
     const employeeInfoByAdmin = useAppSelector(selectEmployeesList)[0]
     const {empID} = useParams()
-    console.log(user_role)
     useEffect(()=>{
         if(!user_role) return
         if(user_role === "admin"){

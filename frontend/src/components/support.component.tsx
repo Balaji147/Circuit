@@ -1,7 +1,6 @@
 import { capitalizeFullWord } from "../helpers/format.function"
 
 export const StatusComponent = ({taskLevel})=>{
-    console.log("fsd", taskLevel)
     let colorCode = "bg-green-100 text-green-700"
     if(taskLevel === "medium")
         colorCode = "bg-amber-100 text-amber-700"
